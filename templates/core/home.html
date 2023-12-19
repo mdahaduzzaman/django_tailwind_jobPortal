@@ -1,0 +1,38 @@
+<!-- templates/home.html -->
+{% extends "_base.html" %}
+{% load custom_filters %}
+
+<!--This block is for css of home.html if needed-->
+{% block css %}
+<style></style>
+{% endblock css %}
+
+
+<!-- Main content block is start from here -->
+{% block content %}
+    {% if jobs %}
+        {% for job in jobs %}
+            <a href="{% url 'details_job' job.id %}" class="">
+                <div class="border border-blue-600 m-5 px-5 pt-5 pb-2 rounded-lg hover:bg-blue-200"  data-tooltip-target="tooltip-animation-job-{{job.id}}">
+                    <h1 class="lg:text-4xl text-2xl font-bold">{{ job.position }}</h1>
+                    <p class="text-blue-500 italic">{{ job.recruiter.company_name }} - ( {{ job.job_type }} )</p>
+                    <p class="text-slate-500">{{ job.location }}</p>
+    
+                    <div class="flex justify-between align-bottom">
+                        <p><strong class="font-extrabold text-sm">৳&nbsp;</strong>{{ job.salary }}</p>
+                        {% if job.created_at %}
+                            <p class="text-purple-500 text-[.7rem] lg:text-sm text-right">Published at {{ job.created_at|calculate_days_hours_since }}</p>
+                        {% endif %}
+                    </div>
+
+                    {% comment %} Tooltip for jobseeker {% endcomment %}
+                    <div id="tooltip-animation-job-{{job.id}}" role="tooltip" class="absolute z-30 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                        View details of this job
+                        <div class="tooltip-arrow" data-popper-arrow></div>
+                    </div>
+                    {% comment %} tooltip end {% endcomment %}
+                </div>
+            </a>
+        {% endfor %}
+    {% endif %}
+{% endblock content %}

@@ -1,0 +1,41 @@
+<!-- templates/joinas.html -->
+{% extends "_base.html" %}
+{% load static %}
+
+
+<!-- Main content block is start from here -->
+{% block content %}
+<div class="w-screen h-[88vh] grid place-items-center">
+    <div>
+        <h1 class="text-center text-4xl font-bold mb-5">What do you want?</h1>
+        <div class="flex flex-col lg:flex-row lg:mx-20 gap-10">
+            <a href="{% url 'register_profile' 'jobseeker' %}">
+                <div class="h-[10rem] hover:shadow-lg" data-tooltip-target="tooltip-animation-jobseeker">
+                    <img class="h-full rounded-md" src="{% static 'image/job-seeker.jpeg' %}" alt="">
+                </div>
+                <h1 class="text-center text-3xl font-bold text-blue-500 mt-5">Need a Job</h1>
+    
+                {% comment %} Tooltip for jobseeker {% endcomment %}
+                <div id="tooltip-animation-jobseeker" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                    Click to join as job seeker
+                    <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
+                {% comment %} tooltip end {% endcomment %}
+            </a>
+            <a href="{% url 'register_profile' 'recruiter' %}">
+                <div class="h-[10rem] hover:shadow-lg" data-tooltip-target="tooltip-animation-recruiter">
+                    <img class="h-full rounded-md" src="{% static 'image/job-reqruiter.jpeg' %}" alt="">
+                </div>
+                <h1 class="text-center text-3xl font-bold text-blue-500 mt-5">Post a Job</h1>
+    
+                {% comment %} Tooltip for Recruiter {% endcomment %}
+                <div id="tooltip-animation-recruiter" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                    Click to join as job Recruiter
+                    <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
+                {% comment %} tooltip end {% endcomment %}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,35 @@
+<!-- templates/dashboard.html -->
+{% extends "_base.html" %}
+
+
+<!-- Main content block is start from here -->
+{% block content %}
+{% if form %}
+<form method="post" class="max-w-lg lg:mx-auto mx-5 mt-5" enctype="multipart/form-data">
+    <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Register as a {{ register_type }}</h1>
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="form-group">
+            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+            {% if field.field.widget.input_type == 'file' %}
+                <input class="shadow-sm mb-2 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file" name="{{ field.name }}" id="id_{{ field.name }}">
+            {% elif field.field.widget.input_type == 'checkbox' %}                    
+                
+                {{ field }} <br>
+
+            {% elif 'Textarea' in field.field.widget|pprint %}
+                <textarea name="{{ field.name }}" id="id_{{ field.name }}" value="bang" rows="3" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter your {{ field.label }}...">{% if field.value %}{{ field.value }}{% endif %}</textarea>
+            {% else %}
+                <input value="{% if field.value %}{{ field.value }}{% endif %}" type="text" name="{{ field.name }}" class="shadow-sm block mb-2 w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="id_{{ field.name }}" placeholder="Enter your {{ field.label }}">
+            {% endif %}
+        </div>
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    <button type="submit" class="w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+</form>
+{% endif %}
+{% endblock content %}

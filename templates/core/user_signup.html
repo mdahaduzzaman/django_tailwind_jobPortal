@@ -1,0 +1,37 @@
+<!-- templates/user_signup.html -->
+{% extends "_base.html" %}
+
+<!--This block is for css of user_signup.html if needed-->
+{% block css %}
+<style></style>
+{% endblock css %}
+
+
+<!-- Main content block is start from here -->
+{% block content %}
+<form method="post" class="max-w-lg lg:mx-auto mx-5 mt-5" enctype="multipart/form-data">
+    <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Signup to JobPortal</h1>
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="form-group">
+            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+            {% if field.name == 'password1' %}
+                <input class="shadow-sm mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" type="password" name="{{ field.name }}" id="id_{{ field.name }}" placeholder="Enter your {{ field.label }}">
+            {% elif field.name == 'password2' %}
+                <input class="shadow-sm mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" type="password" name="{{ field.name }}" id="id_{{ field.name }}" placeholder="Confirm your password">
+            {% elif field.name == 'avatar' %}
+                <input class="shadow-sm mb-2 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file" name="{{ field.name }}" id="id_{{ field.name }}">
+            {% else %}
+                <input value="{% if field.value %}{{ field.value }}{% endif %}" type="text" name="{{ field.name }}" class="shadow-sm block mb-2 w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="id_{{ field.name }}" placeholder="Enter your {{ field.label }}">
+            {% endif %}
+        </div>
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    <p class="my-1">Already have an account? <a href="{% url 'user_login' %}" class="underline text-blue-400">Login</a></p>
+    <button type="submit" class="w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+</form>
+{% endblock content %}

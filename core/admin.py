@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import CustomUser, Recruiter
+from .models import *
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff')
-    search_fields = ('username', 'email', 'first_name', 'last_name')
+    list_display = ('id', 'email', 'full_name', 'is_active', 'is_staff', 'is_superuser')
+    search_fields = ('username', 'email')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
     readonly_fields = ('password',)
 
@@ -13,3 +13,24 @@ class RecruiterAdmin(admin.ModelAdmin):
     list_display = ('id', 'company_name', 'company_address', 'user')
     search_fields = ('company_name', 'company_address', 'user__username')
     list_filter = ('company_name', 'company_address')
+
+@admin.register(JobSeeker)
+class JobSeekerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user')
+    search_fields = ('user', 'skills')
+    list_filter = ('user', 'skills')
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    search_fields = ('name',)
+
+@admin.register(Applicationjobseeker)
+class ApplicationjobseekerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'jobpost')
+    search_fields = ('user', 'jobpost')
+
+@admin.register(JobPost)
+class JobPostAdmin(admin.ModelAdmin):
+    list_display = ('id', 'position', 'recruiter', 'job_type')
+    search_fields = ('position', 'recruiter', 'job_type')

@@ -2,6 +2,7 @@
 
 {% load compress %}
 {% load static %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,18 +33,27 @@
         nav ul li:hover:after{
             width: 100%;
         }
-
     </style>
 </head>
 
 <body class="bg-green-50">
-    <div class="container mx-auto">
+    <div class="container mx-auto transition-all">
+        <!-- Navbar content-->
         {% include "navbar.html" %}
+        <!-- Message content -->
+        {% include "message.html" %}
         {% block content %}
         {% endblock content %}
     </div>
+    
     {% block javascript %}{% endblock javascript %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+    <script>
+        // Get the nav element
+        var myNav = document.querySelector('nav');
+        // Set the nav-wrapper height to the actual myNav
+        document.querySelector('.nav-wrapper').style.height = (myNav.offsetHeight) + 'px';
+    </script>
 </body>
 
 </html>
