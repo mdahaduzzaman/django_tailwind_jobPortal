@@ -6,7 +6,6 @@ class CustomUserAdmin(admin.ModelAdmin):
     list_display = ('id', 'email', 'full_name', 'is_active', 'is_staff', 'is_superuser')
     search_fields = ('username', 'email')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
-    readonly_fields = ('password',)
 
 @admin.register(Recruiter)
 class RecruiterAdmin(admin.ModelAdmin):
@@ -34,3 +33,13 @@ class ApplicationjobseekerAdmin(admin.ModelAdmin):
 class JobPostAdmin(admin.ModelAdmin):
     list_display = ('id', 'position', 'recruiter', 'job_type')
     search_fields = ('position', 'recruiter', 'job_type')
+
+@admin.register(Experience)
+class ExperienceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'position', 'company_name', 'job_type')
+    search_fields = ('position', 'company_name', 'job_type')
+
+@admin.register(Education)
+class EducationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'school', 'degree', 'field_of_study')
+    search_fields = ('school', 'degree', 'field_of_study')

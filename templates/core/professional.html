@@ -1,0 +1,91 @@
+<!-- templates/professional.html -->
+{% extends "_base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+<!-- Main content block is start from here -->
+{% block content %}
+    {% if user %}
+        <div class="flex gap-5 p-10 w-screen h-[88vh]">
+            <main class="w-[70%] bg-white h-fit">
+                <div class="relative bg-blue-50">
+                    <img class="w-full h-40 mb-3 shadow-sm object-contain rounded-tr-lg rounded-tl-lg" src="{% if user.jobseeker.cover_photo %} {{ user.jobseeker.cover_photo.url }} {% else %} {% static 'image/job-seeker.jpeg' %} {% endif %}" alt="Bonnie image"/>
+                    <div class="absolute top-28 left-8">
+                        <img class="w-28 h-28 mb-3 rounded-full shadow-lg border-[5px] border-blue-400" src="{% if user.avatar %} {{ user.avatar.url }} {% else %} {% static 'image/job-seeker.jpeg' %} {% endif %}" alt="{{ user.full_name }} image"/>
+                    </div>
+                </div>
+                <div class="mt-20 mx-8">
+                    <h1 class="text-3xl font-bold">{{ user.full_name }}</h1>
+                    {% if user.jobseeker.skills.all %}
+                        <h5>
+                            {% for skill in user.jobseeker.skills.all  %}
+                                {{ skill }}
+
+                                {% if not forloop.last %}|{% endif %}
+
+                                {% if forloop.last %}.{% endif %}
+                                
+                            {% endfor %}
+                        </h5>
+                    {% endif %}
+                    <p class="text-blue-400 italic">{{ user.jobseeker.location }}</p>
+                    <div class="mt-4 md:mt-6">
+                        <a href="#" class="flex gap-1 max-w-[8rem] text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                            Message
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="w-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                              </svg>
+                              
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="mt-10 mx-8">
+                    <h1 class="font-semibold text-3xl">About</h1>
+                    <p class="my-3">{% if user.jobseeker.about %} {{ user.jobseeker.about }} {% else %} Not-updated-yet{% endif %}</p>
+                </div>
+
+                <div class="mt-10 mx-8">
+                    <h1 class="font-semibold text-3xl mb-3">Experience</h1>
+                    {% for experience in user.jobseeker.experience_set.all %}
+                        <h2 class="font-semibold text-2xl text-blue-500 italic">{{ experience.position }}</h2>
+                        <div class="text-slate-500">
+                            <h6 class="font-medium ">{{ experience.company_name }} -- {{ experience.job_time }}</h6> 
+                            <p>{{ experience.from_time|date:"F Y" }} - {{ experience.to_time|date:"F Y" }}</p>
+                            <p>{{ experience.job_type }}</p>
+                        </div>
+                        <p class="mt-3">{{ experience.details_of_this_job }}</p>
+                        {% if not forloop.last %} <hr class="my-5"> {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="mt-10 mx-8">
+                    <h1 class="font-semibold text-3xl mb-3">Education</h1>
+                    {% for education in user.jobseeker.education_set.all %}
+                        <h2 class="font-semibold text-2xl text-blue-500 italic">{{ education.school }}</h2>
+                        <div class="text-slate-500 mb-5">
+                            <h6 class="font-medium ">{{ education.degree }} -- {{ education.field_of_study }}</h6> 
+                            <p>{{ education.start_date|date:"Y" }} - {{ education.end_date|date:"Y" }}</p>
+                        </div>
+                        {% if not forloop.last %} <hr class="my-5"> {% endif %}
+                    {% endfor %}
+                </div>
+            </main>
+            <aside class="w-[30%] flex flex-col gap-5">
+                {% for usr in users %}
+                    <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                        <div class="flex flex-col items-center py-10">
+                            <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="{% if usr.avatar %} {{ usr.avatar.url }} {% else %} {% static 'image/job-seeker.jpeg' %} {% endif %} " alt="{{ usr.full_name }} image"/>
+                            <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{{ usr.full_name }}</h5>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{% if usr.jobseeker.headline %} {{ usr.jobseeker.headline }} {% else %} Not-available-yet {% endif %}</span>
+                            <div class="flex mt-4 md:mt-6">
+                                <a href="{% url 'professional' user.id %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View Details</a>
+                                <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700 ms-3">Message</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </aside>
+        </div>
+    {% endif %}
+{% endblock content %}

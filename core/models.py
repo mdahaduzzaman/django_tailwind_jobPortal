@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.hashers import make_password
 
 # A utility function for uploading User avatar
 def user_avatar_upload_path(instance, filename):
@@ -13,7 +14,15 @@ def user_cv_upload_path(instance, filename):
 
 # A utility function for uploading company image
 def company_image_upload_path(instance, filename):
-    return f'Company/Logo/{instance.company_name}_{instance.user.id}_{filename}'
+    return f'Company/Logo/{instance.company_name}_{instance.id}_{filename}'
+
+# A utility function for uploading company image
+def company_cover_image_upload_path(instance, filename):
+    return f'Company/CoverPhoto/{instance.company_name}_{instance.id}_{filename}'
+
+# A utility function for uploading jobseeker cover image
+def cover_photo_upload_path(instance, filename):
+    return f'JobSeeker/CoverPhoto/{instance.user.full_name}_{instance.id}_{filename}'
 
 # Creating a CustomUserManager for manage the CustomUser
 class CustomUserManager(BaseUserManager):
@@ -57,6 +66,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    def save(self, *args, **kwargs):
+        if self._state.adding:  # Check if the instance is being added (created) for the first time
+            self.password = make_password(self.password)  # Hash the password using Django's make_password
+        return super().save(*args, **kwargs)
+
     def __str__(self):
         return self.email
     
@@ -72,7 +86,10 @@ class Recruiter(models.Model):
     company_address = models.TextField(verbose_name=_('Company Address'))
     company_about = models.TextField(verbose_name=_('About Company'))
     company_logo = models.ImageField(upload_to=company_image_upload_path, verbose_name=_('Company Logo'))
+    company_cover_photo = models.ImageField(upload_to=company_cover_image_upload_path, verbose_name=_('Company Cover Photo'), null=True)
     total_employees = models.IntegerField(default=0)
+    website = models.URLField(null=True)
+    main_services = models.CharField(max_length=150, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -104,7 +121,11 @@ class JobSeeker(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     cv = models.FileField(upload_to=user_cv_upload_path, blank=True, null=True, verbose_name=_('CV'))
+    cover_photo = models.ImageField(upload_to=cover_photo_upload_path, blank=True, null=True)
+    about = models.TextField(null=True)
+    headline = models.CharField(max_length=100, null=True)
     skills = models.ManyToManyField(Skill)
+    location = models.TextField(null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -117,6 +138,52 @@ class JobSeeker(models.Model):
         verbose_name = _('JobSeeker')
         verbose_name_plural = _('JobSeekers')
 
+class Experience(models.Model):
+    jobs = (
+        ('Onsite', 'Onsite'),
+        ('Hybrid', 'Hybrid'),
+        ('Remote', 'Remote'),
+    )
+    time = (
+        ('Full-time', 'Full-time'),
+        ('Part-time', 'Part-time'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
+    position = models.CharField(max_length=150)
+    company_name = models.CharField(max_length=150)
+    from_time = models.DateField()
+    to_time = models.DateField()
+    job_type = models.CharField(max_length=15, choices=jobs, default="Onsite")
+    job_time = models.CharField(max_length=15, choices=time, default="Full-time")
+    details_of_this_job = models.TextField()
+    jobseeker = models.ForeignKey(JobSeeker, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.jobseeker.user.full_name
+    
+    class Meta:
+        db_table = "Experience"
+        verbose_name = _('Experience')
+        verbose_name_plural = _('Experiences')
+
+
+class Education(models.Model):
+    school = models.CharField(max_length=150)
+    degree = models.CharField(max_length=150)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    field_of_study = models.CharField(max_length=150)
+    jobseeker = models.ForeignKey(JobSeeker, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.school
+    
+    class Meta:
+        db_table = "Education"
+        verbose_name = _('Education')
+        verbose_name_plural = _('Educations')
+    
 
 class Applicationjobseeker(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -149,6 +216,7 @@ class JobPost(models.Model):
     location = models.TextField()
     skills_required = models.ManyToManyField(Skill)
     job_type = models.CharField(max_length=20, choices = jobs, default='Onsite')
+    deadline = models.DateTimeField(null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

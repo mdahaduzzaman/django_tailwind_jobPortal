@@ -4,5 +4,49 @@
 
 <!-- Main content block is start from here -->
 {% block content %}
+<div class="bg-green-100 w-screen">
 
+    <div class=" px-10">
+        <div>
+            <h1 class="font-bold text-2xl py-5">Welcome to <span class="font-semibold italic">JobPortal</span>, where opportunities meet aspirations!</h1>
+
+            <p>At <span class="font-semibold italic">JobPortal</span>, we believe that the right job can transform a person's life and that finding the perfect fit for both employers and job seekers is paramount. Our platform is designed to bridge the gap between talent and opportunity, making the job search process seamless, efficient, and rewarding for all.</p>
+        </div>
+
+        <div>
+            <h3 class="mt-5 font-bold text-2xl">Our Journey:</h3>
+            <p>Established with a vision to revolutionize the job search experience, <span class="font-semibold italic">JobPortal</span> embarked on a mission to connect talented individuals with companies seeking their skills. Since our inception, we've been dedicated to creating an inclusive, user-friendly platform that caters to the diverse needs of both job seekers and employers.</p>
+        </div>
+
+        <div>
+            <h3 class="mt-5 font-bold text-2xl">What Sets Us Apart:</h3>
+            <p class="mb-3">We stand out from the crowd through our commitment to innovation, user-centric design, and a relentless pursuit of excellence. Here's what defines <span class="font-semibold italic">JobPortal</span>:</p>
+            <ol class="list-decimal ps-10">
+                <li> <span class="font-semibold">Extensive Job Listings:</span> Access a wide array of job opportunities spanning various industries, sectors, and career levels, ensuring there's something for everyone.</li>
+                <li><span class="font-semibold">Advanced Search and Matching Technology:</span> Our intelligent algorithms match candidates with roles that align with their skills, experience, and preferences, streamlining the job hunting process.</li>
+                <li><span class="font-semibold">Employer-Centric Solutions:</span> For businesses, we offer tailored recruitment solutions, helping them find the best talent efficiently and cost-effectively.</li>
+                <li><span class="font-semibold">User-Friendly Interface:</span> Our intuitive platform ensures a seamless experience for both job seekers and employers, making navigation and job applications hassle-free.</li>
+                <li><span class="font-semibold">Supportive Community:</span> We foster a community-driven environment where individuals can seek guidance, share experiences, and access resources to enhance their career growth.</li>
+            </ol>
+        </div>
+
+        <div>
+            <h3 class="mt-5 font-bold text-2xl">Our Commitment:</h3>
+            <p>At <span class="font-semibold italic">JobPortal</span>, we are committed to empowering individuals to achieve their professional goals. Whether you're a recent graduate taking the first step in your career journey or an experienced professional seeking new challenges, we're here to support you every step of the way.</p>
+        </div>
+
+        <div>
+            <h3 class="mt-5 font-bold text-2xl">Join Us:</h3>
+            <p>Become a part of our growing community and unlock the doors to countless opportunities. Join <span class="font-semibold italic">JobPortal</span> today and embark on a journey towards fulfilling career prospects.</p>
+
+            <div class="my-5">
+                <a href="{% url 'user_signup' %}" type="button" class="text-white bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-full text-sm px-10 py-2.5 text-center me-2 mb-2">Join JobPortal</a>
+            </div>
+        </div>
+
+    </div>
+    <div class="bg-white mt-5 px-10">
+        <p class="py-5 text-blue-500">Thank you for choosing <span class="font-semibold italic">JobPortal</span> as your trusted partner in your job search or recruitment journey. We're excited to be a part of your success story! </p>
+    </div>
+</div>
 {% endblock content %}

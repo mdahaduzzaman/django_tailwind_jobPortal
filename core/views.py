@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from .forms import *
@@ -7,9 +7,55 @@ def home(request):
     jobs = JobPost.objects.all()
     return render(request, 'core/home.html', {'jobs': jobs})
 
+def search(request):
+    content = request.GET.get('search')
+    print(content)
+    try:
+        recruiter = request.user.recruiter
+        users = CustomUser.objects.filter(jobseeker__isnull=False, jobseeker__skills__name__icontains=content)
+        return render(request, 'core/professionals.html', {'users': users})
+    except:
+        try:
+            jobseeker = request.user.jobseeker
+
+            jobs = JobPost.objects.filter(skills_required__name__icontains=content)
+            return render(request, 'core/home.html', {'jobs': jobs})
+        except:
+            return redirect('home')
+
+
 def details_job(request, jobId):
     job = JobPost.objects.get(pk=jobId)
     return render(request, 'core/details_job.html', {'job': job})
+
+def recruiters_list(request):
+    recruiters = Recruiter.objects.all()
+    return render(request, 'core/recruiters_list.html', {'recruiters': recruiters})
+
+
+def details_recruiter(request, recruiterID):
+
+    recruiters = Recruiter.objects.all()
+
+    recruiter = get_object_or_404(recruiters, pk=recruiterID)
+    recruiters = recruiters.exclude(pk=recruiter.pk)
+
+    jobs = recruiter.jobpost_set.all()
+
+    return render(request, 'core/details_recruiter.html', {'recruiters': recruiters, 'recruiter': recruiter, 'jobs': jobs})
+
+def professionals(request):
+    users = CustomUser.objects.filter(jobseeker__isnull=False)
+
+    return render(request, 'core/professionals.html', {'users': users})
+
+def professional(requset, userId):
+    users = CustomUser.objects.all()
+
+    user = get_object_or_404(users, pk=userId)
+    users = users.exclude(pk=user.pk)
+
+    return render(requset, 'core/professional.html', {'user': user, 'users': users})
 
 def user_signup(request):
     if not request.user.is_authenticated:
