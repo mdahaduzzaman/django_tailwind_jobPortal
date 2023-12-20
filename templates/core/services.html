@@ -1,8 +1,30 @@
 <!-- templates/services.html -->
 {% extends "_base.html" %}
+{% load static %}
 
 
 <!-- Main content block is start from here -->
 {% block content %}
-
+<div class="bg-green-200 w-screen h-[88vh]">
+    <h1 class="font-bold text-5xl text-center py-5">Our Services and Features</h1>
+    <div class="flex justify-center gap-10">
+        <div class="w-[20rem] bg-white rounded-md text-center">
+            <img class="h-[8rem] rounded-md mx-auto" src="{% static 'image/job-seeker.jpeg' %}" alt="">
+            <h2 class="text-2xl font-semibold mt-5 text-blue-400">Find a job</h2>
+            <p class="mx-3 my-5 italic">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium excepturi ab voluptatem eius ullam.</p>
+            <div class="text-center my-5">
+                <a href="{% url 'home' %}" type="button" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-full text-sm px-10 py-2.5 text-center me-2 mb-2">Find</a>
+            </div>
+        </div>
+        <div class="w-[20rem] bg-white rounded-md text-center">
+            <img class="h-[8rem] rounded-md mx-auto" src="{% static 'image/job-reqruiter.jpeg' %}" alt="">
+            <h2 class="text-2xl font-semibold mt-5 text-blue-400">Hire a professional</h2>
+            <p class="mx-3 my-5 italic">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium excepturi ab voluptatem eius ullam.</p>
+            <div class="text-center my-5">
+                <a href="" type="button" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-full text-sm px-10 py-2.5 text-center me-2 mb-2">Hire</a>
+            </div>
+        </div>
+        
+    </div>
+</div>
 {% endblock content %}
