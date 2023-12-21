@@ -13,6 +13,6 @@ def calculate_days_hours_since(value):
         duration = now - value
         days = duration.days
         hours = duration.seconds // 3600
-        minutes = duration.seconds // 60
+        minutes = (duration.seconds % 3600) // 60
         return f"{days} days, {hours} hours, {minutes} minutes ago"
     return ""

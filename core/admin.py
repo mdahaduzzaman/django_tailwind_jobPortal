@@ -26,8 +26,8 @@ class SkillAdmin(admin.ModelAdmin):
 
 @admin.register(Applicationjobseeker)
 class ApplicationjobseekerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'jobpost')
-    search_fields = ('user', 'jobpost')
+    list_display = ('id', 'jobseeker', 'jobpost')
+    search_fields = ('jobseeker', 'jobpost')
 
 @admin.register(JobPost)
 class JobPostAdmin(admin.ModelAdmin):

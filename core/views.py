@@ -1,7 +1,9 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.models import Group
 from django.contrib import messages
 from .forms import *
+from .utils import *
 
 def home(request):
     jobs = JobPost.objects.all()
@@ -98,32 +100,27 @@ def user_logout(request):
     return redirect('user_login')
 
 def dashboard(request):
+    user = request.user
     context ={}
-    reqruiter_instance = None
-    jobseeker_instance = None
-    if request.user.is_authenticated:
-        user = request.user
 
-        # Trying to find that the user type
-        try:
-            reqruiter_instance = user.recruiter
-        except:
-            try:
-                jobseeker_instance = user.jobseeker
-            except:
-                return redirect('joinas')
-        if reqruiter_instance:
-            pass
-            # form = JobPostForm()
-            # context = {
-            #     'form': form,
+    # if user is jobseeker then including this jobseeker object
+    if user_is_jobseeker(user):
+        context['applications'] = user.jobseeker.applicationjobseeker_set.all()
+        context['jobseeker'] = user.jobseeker
 
-            # }
-        elif jobseeker_instance:
-            context = {}
-        return render(request, 'core/dashboard.html', context)
-    else:
-        return redirect('user_login')
+    # if user is recruiter then including this recruiter object
+    if user_is_recruiter(user):
+        count = 0
+        for jobpost in user.recruiter.jobpost_set.all():
+            for application in jobpost.applicationjobseeker_set.all():
+                count += 1
+
+        jobs = user.recruiter.jobpost_set.all()
+        context['jobs'] = jobs
+        context['recruiter'] = user.recruiter
+        context['applicationCount'] = count
+
+    return render(request, 'core/dashboard.html', context)
 
 
 def about(request):

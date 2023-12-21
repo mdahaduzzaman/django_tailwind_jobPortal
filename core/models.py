@@ -186,14 +186,14 @@ class Education(models.Model):
     
 
 class Applicationjobseeker(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    jobpost = models.OneToOneField('JobPost', on_delete=models.CASCADE)
+    jobseeker = models.ForeignKey(JobSeeker, on_delete=models.CASCADE)
+    jobpost = models.ForeignKey('JobPost', on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return self.user.full_name
+        return self.jobseeker.user.full_name
     
     class Meta:
         db_table = "Applicationjobseeker"
