@@ -17,6 +17,7 @@
                 <div class="mt-20 mx-8">
                     <h1 class="text-3xl font-bold">{{ recruiter.company_name }}</h1>
                     <p class="text-blue-400 italic">{{ recruiter.company_address|linebreaksbr }}</p>
+                    <p class="my-3"><span class="font-semibold">Website: </span>{% if recruiter.website %} <a class="underline text-blue-500" target="_blank" href="{{ recruiter.website }}">{{ recruiter.website }}</a> {% else %} Not-updated-yet{% endif %}</p>
                     <div class="mt-4 md:mt-6">
                         <a href="#" class="flex gap-1 max-w-[8rem] text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                             Message

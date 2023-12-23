@@ -1,0 +1,557 @@
+<!-- templates/about.html -->
+{% extends "_base.html" %}
+{% load static %}
+{% block css %}
+<style>
+    .success-block{
+        background-color: rgb(204, 255, 0);
+        font-weight: 700;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: all .3s linear;
+        margin-bottom: 10px;
+    }
+
+</style>
+{% endblock css %}
+
+<!-- Main content block is start from here -->
+{% block content %}
+<div class="bg-green-100 w-screen pt-5">
+
+    {% comment %} Only profile section {% endcomment %}
+    <div class="flex max-h-[20rem] gap-5 mx-10 bg-white rounded-lg relative">
+        <div class="w-[30%]">
+            <img class="w-full h-full object-contain" src="{% if request.user.avatar %} {{ request.user.avatar.url }} {% else %} {% static 'image/job-reqruiter.jpeg' %} {% endif %}" alt="">
+        </div>
+        <div class="w-[70%]">
+            <h1 class="lg:text-7xl font-bold">{{ request.user.full_name }}</h1>
+        </div>
+        <button data-modal-target="profileUpdateForm-modal" data-modal-toggle="profileUpdateForm-modal" class="absolute top-0 right-0 hover:bg-green-100 p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+            </svg>   
+        </button>
+        <!-- profileUpdateForm modal -->
+        <div id="profileUpdateForm-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full max-w-md max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                            Edit your profile
+                        </h3>
+                        <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="profileUpdateForm-modal">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-4 md:p-5">
+                        {% if profileUpdateForm %}
+                            <form id="profile-update-form" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" action="{% url 'update_profile' %}" method="post" novalidate enctype="multipart/form-data">
+                                <div id="profile-success-block"></div>
+                                {% csrf_token %}
+                                    {% for field in profileUpdateForm %}
+                                        <div class="mb-2">
+                                            <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                                            {{ field}}
+                                        </div>
+                                        {% if field.errors %}
+                                            {% for error in field.errors %}
+                                                <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+                            </form>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div> 
+        {% comment %} modal end {% endcomment %}
+        <!--=====================================-->
+    </div>
+
+
+    <!--======================================================-->
+    {% comment %} recruiter block start {% endcomment %}
+    {% if request.user.recruiter %}
+    <div class="mx-10 bg-white my-5">
+        <div class="relative bg-blue-50 rounded-lg">
+            <img class="w-full h-40 mb-3 shadow-sm object-contain rounded-tr-lg rounded-tl-lg" src="{% if request.user.recruiter.company_cover_photo %} {{ request.user.recruiter.company_cover_photo.url }} {% else %} {% static 'image/job-reqruiter.jpeg' %} {% endif %}" alt="{{ request.user.recruiter.company_name }} cover image"/>
+            <div class="absolute top-28 left-8">
+                <img class="w-28 h-28 mb-3 rounded-full shadow-lg border-[5px] border-blue-400" src="{% if request.user.recruiter.company_logo %} {{ request.user.recruiter.company_logo.url }} {% else %} {% static 'image/job-reqruiter.jpeg' %} {% endif %}" alt="{{ request.user.recruiter.company_name }} logo"/>
+            </div>
+            <button data-modal-target="recruiterUpdateForm-modal" data-modal-toggle="recruiterUpdateForm-modal" class="absolute top-0 right-0 hover:bg-green-100 p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>   
+            </button>
+            <!-- profileUpdateForm modal -->
+            <div id="recruiterUpdateForm-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative p-4 w-full max-w-md max-h-full">
+                    <!-- Modal content -->
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                                Edit your profile
+                            </h3>
+                            <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="recruiterUpdateForm-modal">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-5">
+                            {% if recruiterUpdateForm %}
+                                <form action="{% url 'update_recruiter_profile' %}" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
+                                    <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Edit your Recruiter Profile</h1>
+                                    {% csrf_token %}
+                                        {% for field in recruiterUpdateForm %}
+                                            <div class="mb-2">
+                                                <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                                                {{ field}}
+                                            </div>
+                                            {% if field.errors %}
+                                                {% for error in field.errors %}
+                                                    <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+                                </form>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div> 
+            {% comment %} modal end {% endcomment %}
+            <!--=====================================-->
+        </div>
+
+        <div class="mt-20 mx-8">
+            <h1 class="font-bold text-5xl">{% if request.user.recruiter.company_name %} {{ request.user.recruiter.company_name|linebreaksbr }} {% else %} Not-updated-yet{% endif %}</h1>
+            <p class="my-3">{% if request.user.recruiter.company_address %} {{ request.user.recruiter.company_address|linebreaksbr }} {% else %} Not-updated-yet{% endif %}</p>
+            <p class="my-3"><span class="font-semibold">Website: </span>{% if request.user.recruiter.website %} <a class="underline text-blue-500" target="_blank" href="{{ request.user.recruiter.website }}">{{ request.user.recruiter.website }}</a> {% else %} Not-updated-yet{% endif %}</p>
+        </div>
+
+        <div class="mt-5 mx-8">
+            <h1 class="font-semibold text-3xl">About</h1>
+            <p class="my-3">{% if request.user.recruiter.company_about %} {{ request.user.recruiter.company_about|linebreaksbr }} {% else %} Not-updated-yet{% endif %}</p>
+            <p class="my-3"><span class="font-semibold">Main services: </span>{% if request.user.recruiter.main_services %} {{ request.user.recruiter.main_services|linebreaksbr }} {% else %} Not-updated-yet{% endif %}</p>
+        </div>
+    </div>
+    {% endif %}
+    {% comment %} recruiter block end {% endcomment %}
+    <!--======================================================-->
+
+
+    
+    <!--======================================================-->
+    {% comment %} jobseeker block start {% endcomment %}
+    {% if request.user.jobseeker %}
+    <div class="mx-10 bg-white my-5 rounded-lg">
+        
+        <div class="relative bg-blue-50">
+            <img class="w-full h-40 mb-3 shadow-sm object-contain rounded-tr-lg rounded-tl-lg" src="{% if request.user.jobseeker.cover_photo %} {{ request.user.jobseeker.cover_photo.url }} {% else %} {% static 'image/job-seeker.jpeg' %} {% endif %}" alt="{{ request.user.full_name }} cover image"/>
+            <div class="absolute top-28 left-8">
+                <img class="w-28 h-28 mb-3 rounded-full shadow-lg border-[5px] border-blue-400" src="{% if request.user.avatar %} {{ request.user.avatar.url }} {% else %} {% static 'image/job-seeker.jpeg' %} {% endif %}" alt="{{ request.user.full_name }} profile image"/>
+            </div>
+            {% comment %} Edit modal {% endcomment %}
+            <button data-modal-target="jobseekerUpdateForm-modal" data-modal-toggle="jobseekerUpdateForm-modal" class="absolute top-0 right-0 hover:bg-green-100 p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>   
+            </button>
+            <!-- profileUpdateForm modal -->
+            <div id="jobseekerUpdateForm-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative p-4 w-full max-w-md max-h-full">
+                    <!-- Modal content -->
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-4 md:px-5 border-b rounded-t dark:border-gray-600">
+                            <h1 class="mb-4 text-xl font-bold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-xl dark:text-white">Edit your Jobseeker Profile</h1>
+                            <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="jobseekerUpdateForm-modal">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-2">
+                            {% if jobseekerUpdateForm %}
+                                <form action="{% url 'update_jobseeker_profile' %}" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
+                                    
+                                    {% csrf_token %}
+                                        {% for field in jobseekerUpdateForm %}
+                                            <div class="mb-2">
+                                                <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                                                {{ field}}
+                                            </div>
+                                            {% if field.errors %}
+                                                {% for error in field.errors %}
+                                                    <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            {% comment %} modal end {% endcomment %}
+            <!--=====================================-->
+        </div>
+
+
+        <div class="mt-20 mx-8">
+            <h1 class="text-3xl font-bold">{{ request.user.jobseeker.headline }}</h1>
+            {% if request.user.jobseeker.skills.all %}
+                <h5 class="my-2">
+                    {% for skill in request.user.jobseeker.skills.all  %}
+                        {{ skill }}
+
+                        {% if not forloop.last %}|{% endif %}
+
+                        {% if forloop.last %}.{% endif %}
+                        
+                    {% endfor %}
+                </h5>
+            {% endif %}
+            <p class="text-blue-400 italic"><span class="font-semibold not-italic text-slate-800">Location: </span>{% if request.user.jobseeker.location %} {{ request.user.jobseeker.location }} {% else %} Not updated yet {% endif %}</p>
+        </div>
+
+        <div class="mt-10 mx-8 pb-5">
+            <h1 class="font-semibold text-3xl">About</h1>
+            <p class="my-3">{% if request.user.jobseeker.about %} {{ request.user.jobseeker.about|linebreaksbr }} {% else %} Not-updated-yet{% endif %}</p>
+        </div>
+
+    </div>
+
+    <div class="mt-10 mx-10 bg-white rounded-lg p-5">
+        <h1 class="font-semibold text-3xl mb-3">Experience</h1>
+        {% for experience in request.user.jobseeker.experience_set.all %}
+        <div class="relative">
+            <h2 class="font-semibold text-2xl text-blue-500 italic">{{ experience.position }}</h2>
+            <div class="text-slate-500">
+                <h6 class="font-medium ">{{ experience.company_name }} -- {{ experience.job_time }}</h6> 
+                <p>{{ experience.from_time|date:"F Y" }} - {{ experience.to_time|date:"F Y" }}</p>
+                <p>{{ experience.job_type }}</p>
+            </div>
+            <p class="mt-3">{{ experience.details_of_this_job|linebreaksbr }}</p>
+            {% if not forloop.last %} <hr class="my-5"> {% endif %}
+            {% if forloop.last %} 
+                <div class='mt-3 flex justify-end'>
+                    <button data-modal-target="experienceUpdateForm-modal" data-modal-toggle="experienceUpdateForm-modal" class="text-white bg-green-400 hover:text-green-400 flex gap-2 hover:bg-green-100 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="font-extrabold w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Add
+                    </button> 
+                    {% comment %} Add modal {% endcomment %}
+
+            <!-- profileUpdateForm modal -->
+            <div id="experienceUpdateForm-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative p-4 w-full max-w-md max-h-full">
+                    <!-- Modal content -->
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-4 md:px-5 border-b rounded-t dark:border-gray-600">
+                            <h1 class="mb-4 text-xl font-bold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-xl dark:text-white">Add your Experience</h1>
+                            <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="experienceUpdateForm-modal">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-2">
+                            {% if experienceUpdateForm %}
+                                <form action="{% url 'add_experience' %}" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
+                                    
+                                    {% csrf_token %}
+                                        {% for field in experienceUpdateForm %}
+                                            <div class="mb-2">
+                                                <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                                                {{ field}}
+                                            </div>
+                                            {% if field.errors %}
+                                                {% for error in field.errors %}
+                                                    <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            {% comment %} modal end {% endcomment %}
+            <!--=====================================-->
+                </div>
+            {% endif %}
+
+            {% comment %} Edit modal {% endcomment %}
+            <a href="{% url 'delete_experience' experience.id %}" class="absolute top-0 right-10 hover:bg-green-100 p-1 bg-red-500 text-white rounded-md hover:text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class=" w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                </svg>
+            </a>
+            <button data-modal-target="experience-modal-{{ experience.id }}" data-modal-toggle="experience-modal-{{ experience.id }}" class=" p-1 bg-yellow-300 hover:text-yellow-300 text-white rounded-md absolute top-0 right-0 hover:bg-green-100 ">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>   
+            </button>
+            <!-- profileUpdateForm modal -->
+            <div id="experience-modal-{{ experience.id }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative p-4 w-full max-w-md max-h-full">
+                    <!-- Modal content -->
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-4 md:px-5 border-b rounded-t dark:border-gray-600">
+                            <h1 class="mb-4 text-xl font-bold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-xl dark:text-white">Edit your experience</h1>
+                            <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="experience-modal-{{ experience.id }}">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-2">
+                            {% if experienceUpdateForm %}
+                                <form action="{% url 'update_experience' %}" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
+                                    <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Edit your Jobseeker Profile</h1>
+                                    <input type="hidden" name="id" value="{{ experience.id }}">
+                                    {% csrf_token %}
+                                    <div class="mb-2">
+                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_position" class="custom-label">Position</label>
+                                        <input type="text" name="position" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter your position" value="{{ experience.position }}" maxlength="150" required id="id_position">
+                                    </div>
+                                    
+                                
+                                    <div class="mb-2">
+                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_company_name" class="custom-label">Company name</label>
+                                        <input type="text" name="company_name" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" value="{{ experience.company_name }}" placeholder="Enter your company name" maxlength="150" required id="id_company_name">
+                                    </div>
+                                    
+                                
+                                    <div class="mb-2">
+                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_from_time" class="custom-label">From time</label>
+                                        <input type="date" name="from_time" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" value="{{ experience.from_time|date:'Y-m-d' }}" required id="id_from_time">
+                                    </div>
+                                    
+                                
+                                    <div class="mb-2">
+                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_to_time" class="custom-label">To time</label>
+                                        <input type="date" name="to_time" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" value="{{ experience.to_time|date:'Y-m-d' }}" required id="id_to_time">
+                                    </div>
+                                    
+                                
+                                    <div class="mb-2">
+                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_job_type" class="custom-label">Job type</label>
+                                        <select name="job_type" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter position" id="id_job_type">
+                                            <option value="Onsite" {% if experience.job_type == "Onsite" %} selected {% endif %}>Onsite</option>
+                                            <option value="Hybrid" {% if experience.job_type == "Hybrid" %} selected {% endif %}>Hybrid</option>
+                                            <option value="Remote" {% if experience.job_type == "Remote" %} selected {% endif %}>Remote</option>
+
+                                        </select>
+                                    </div>
+                                    
+                                
+                                    <div class="mb-2">
+                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_job_time" class="custom-label">Job time</label>
+                                        <select name="job_time" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter position" id="id_job_time">
+                                            <option value="Full-time" {% if experience.job_time == "Full-time" %} selected {% endif %}>Full-time</option>
+                                            <option value="Part-time" {% if experience.job_time == "Part-time" %} selected {% endif %}>Part-time</option>
+
+                                        </select>
+                                    </div>
+                                    
+                                
+                                    <div class="mb-2">
+                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_details_of_this_job" class="custom-label">Details of this job</label>
+                                        <textarea name="details_of_this_job" cols="40" rows="3" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter details of this position" required id="id_details_of_this_job">{{ experience.details_of_this_job }}</textarea>
+                                    </div>
+                                        {% comment %} {% for field in experienceUpdateForm %}
+                                            <div class="mb-2">
+                                                <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                                                {{ field }}
+                                            </div>
+                                            {% if field.errors %}
+                                                {% for error in field.errors %}
+                                                    <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %} {% endcomment %}
+                                    <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            {% comment %} modal end {% endcomment %}
+            <!--=====================================-->
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-10 mx-8">
+        <h1 class="font-semibold text-3xl mb-3">Education</h1>
+        {% for education in request.user.jobseeker.education_set.all %}
+            <h2 class="font-semibold text-2xl text-blue-500 italic">{{ education.school }}</h2>
+            <div class="text-slate-500 mb-5">
+                <h6 class="font-medium ">{{ education.degree }} -- {{ education.field_of_study }}</h6> 
+                <p>{{ education.start_date|date:"Y" }} - {{ education.end_date|date:"Y" }}</p>
+            </div>
+            {% if not forloop.last %} <hr class="my-5"> {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% comment %} jobseeker block end {% endcomment %}
+    <!--======================================================-->
+
+
+{% comment %} 
+
+    {% if profileUpdateForm %}
+        <form class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
+            <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Edit your Profile</h1>
+            {% csrf_token %}
+                {% for field in profileUpdateForm %}
+                    <div class="mb-2">
+                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                        {{ field}}
+                    </div>
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+        </form>
+    {% endif %}
+
+    {% if recruiterUpdateForm %}
+        <form class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
+            <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Edit your Recruiter Profile</h1>
+            {% csrf_token %}
+                {% for field in recruiterUpdateForm %}
+                    <div class="mb-2">
+                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                        {{ field}}
+                    </div>
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+        </form>
+    {% endif %}
+
+    {% if jobseekerUpdateForm %}
+        <form class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
+            <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Edit your Jobseeker Profile</h1>
+            {% csrf_token %}
+                {% for field in jobseekerUpdateForm %}
+                    <div class="mb-2">
+                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                        {{ field}}
+                    </div>
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+        </form>
+    {% endif %}
+
+    {% if experienceUpdateForm %}
+        <form class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
+            <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Edit your Jobseeker Profile</h1>
+            {% csrf_token %}
+                {% for field in jobseekerUpdateForm %}
+                    <div class="mb-2">
+                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                        {{ field}}
+                    </div>
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+        </form>
+    {% endif %} {% endcomment %}
+
+</div>
+{% endblock content %}
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('profile-update-form');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(form);
+            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+            fetch(form.action, {
+                method: form.method,
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json()) // Assuming the response is HTML
+            .then(data => {
+                // Update the modal content with the response
+                // document.querySelector('.modal-body').innerHTML = data; // Update this selector with your modal body class or ID
+                console.log(data)
+                if(data['success']){
+                    document.getElementById('profile-success-block').textContent = data['success'];
+                    document.getElementById('profile-success-block').classList.add("success-block");
+
+                    setTimeout(()=>{
+                        document.getElementById('profile-success-block').classList.remove('success-block');
+                        document.getElementById('profile-success-block').style.display = 'none';
+                        window.location.reload();
+                    }, 3000)
+                }else if(data['errors']['password']){
+                    document.getElementById('profile-success-block').textContent = "password " + data['errors']['password'];
+                    document.getElementById('profile-success-block').classList.add("success-block");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Handle errors if any
+            });
+        });
+    });
+</script>
+
+{% endblock javascript %}

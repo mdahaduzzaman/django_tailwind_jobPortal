@@ -217,7 +217,7 @@ class JobPost(models.Model):
     skills_required = models.ManyToManyField(Skill)
     job_type = models.CharField(max_length=20, choices = jobs, default='Onsite')
     deadline = models.DateTimeField(null=True)
-
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

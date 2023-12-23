@@ -1,0 +1,28 @@
+<!-- templates/about.html -->
+{% extends "_base.html" %}
+
+
+<!-- Main content block is start from here -->
+{% block content %}
+<div class="bg-green-100 w-screen">
+    {% if form %}
+        <form class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate  enctype="multipart/form-data">
+            <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Add job post</h1>
+            {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-2">
+                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                        {{ field}}
+                    </div>
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+        </form>
+    {% endif %}
+</div>
+  
+{% endblock content %}

@@ -10,7 +10,6 @@ def user_is_jobseeker(user):
 def user_is_recruiter(user):
     try:
         recruiter_group = Group.objects.get(name='Recruiter')
-        print(recruiter_group in user.groups.all())
         return recruiter_group in user.groups.all()
     except Group.DoesNotExist:
         return False
