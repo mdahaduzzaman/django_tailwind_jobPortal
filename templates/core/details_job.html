@@ -6,7 +6,7 @@
 <!-- Main content block is start from here -->
 {% block content %}
     {% if job %}    
-        <div class="border border-blue-600 m-5 px-5 pt-5 pb-2 rounded-lg bg-white"  data-tooltip-target="tooltip-animation-job-{{job.id}}">
+        <div class="border border-blue-600 m-5 px-5 pt-5 pb-2 rounded-lg dark:bg-slate-700 dark:text-slate-200 bg-white"  data-tooltip-target="tooltip-animation-job-{{job.id}}">
             <h1 class="lg:text-6xl text-2xl font-bold">{{ job.position }}</h1>
             <p class="text-blue-500 italic text-3xl my-3">{{ job.recruiter.company_name }} - ( {{ job.job_type }} )</p>
             <p class="text-3xl my-5"><strong class="font-extrabold text-2xl">৳&nbsp;</strong>{{ job.salary }}</p>
@@ -40,6 +40,20 @@
                 {{ job.job_requirements|linebreaksbr }}
             </p>
 
+            {% if job.skills_required.all %}
+                <h2 class="text-2xl font-medium my-5">Required skills</h2>
+                <p class="w-[90%] ms-5">
+                    <ul class="list-disc ms-10">
+
+                        {% for skill in job.skills_required.all  %}
+                        <li>
+                            {{ skill }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+
 
             <div class="">
                 {% if job.created_at %}
@@ -47,7 +61,7 @@
                 {% endif %}
             </div>
         </div>
-        <div class="bg-blue-100 rounded-lg m-5 p-5">
+        <div class="bg-blue-100 dark:bg-slate-500 rounded-lg m-5 p-5">
             <h2 class="text-4xl font-semibold my-5">About the company</h2>
 
             <div class="flex gap-5">
@@ -58,8 +72,8 @@
                 </div>
             </div>
             <div class="text-slate-500 mb-5">
-                <p class="flex ms-24 my-5 font-semibold">{{ job.recruiter.main_services }}</p>
-                <p>{{ job.recruiter.company_about|linebreaksbr }}</p>
+                <p class="flex ms-24 my-5 dark:text-black font-semibold">{{ job.recruiter.main_services }}</p>
+                <p class="dark:text-black">{{ job.recruiter.company_about|linebreaksbr }}</p>
             </div>
             <hr class="my-2">
             <a href="{% url 'details_recruiter' job.recruiter.id %}" class="block text-center font-semibold hover:bg-blue-400 py-2 rounded-lg transition-all">View more...</a>

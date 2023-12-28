@@ -2,18 +2,14 @@
 {% extends "_base.html" %}
 {% load custom_filters %}
 
-<!--This block is for css of home.html if needed-->
-{% block css %}
-<style></style>
-{% endblock css %}
 
 
 <!-- Main content block is start from here -->
-{% block content %}
+{% block content %}    
     {% if jobs %}
         {% for job in jobs %}
             <a href="{% url 'details_job' job.id %}" class="">
-                <div class="border border-blue-600 m-5 px-5 pt-5 pb-2 rounded-lg hover:bg-blue-200"  data-tooltip-target="tooltip-animation-job-{{job.id}}">
+                <div class="border border-blue-600 dark:bg-slate-600 m-5 px-5 pt-5 pb-2 rounded-lg dark:text-slate-200 hover:bg-blue-200"  data-tooltip-target="tooltip-animation-job-{{job.id}}">
                     <h1 class="lg:text-4xl text-2xl font-bold">{{ job.position }}</h1>
                     <p class="text-blue-500 italic">{{ job.recruiter.company_name }} - ( {{ job.job_type }} )</p>
                     <p class="text-slate-500">{{ job.location }}</p>

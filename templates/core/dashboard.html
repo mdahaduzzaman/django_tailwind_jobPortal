@@ -53,17 +53,17 @@
 {% comment %} recruiter block start {% endcomment %}
 {% if recruiter %}
     <div id="recruiterContainer" class="mx-10 my-10 flex gap-10 justify-center lg:flex-row flex-col">
-        <div class="border border-violet-500 lg:w-[30%] w-full rounded-lg p-5 text-center hover:bg-blue-100">
+        <div class="border dark:text-blue-600 hover:dark:bg-blue-300 border-violet-500 lg:w-[30%] w-full rounded-lg p-5 text-center hover:bg-blue-100">
             <h1 class="text-2xl font-bold">Published Jobs</h1>
             <p class="font-extrabold text-3xl my-5">{{ jobs|length }}</p>
             <button type="button" onclick="visibleJobContainer()" class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">View Details</button>
         </div>
-        <div class="border border-violet-500 lg:w-[30%] w-full rounded-lg p-5 text-center hover:bg-blue-100">
+        <div class="border dark:text-blue-600 hover:dark:bg-blue-300 border-violet-500 lg:w-[30%] w-full rounded-lg p-5 text-center hover:bg-blue-100">
             <h1 class="text-2xl font-bold">Application Received</h1>
             <p class="font-extrabold text-3xl my-5">{{ applicationCount }}</p>
             <button onclick="visibleapplicationContainer()" class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">View Details</buttonref=>
         </div>
-        <div class="border border-violet-500 lg:w-[30%] w-full rounded-lg p-5 text-center hover:bg-blue-100">
+        <div class="border dark:text-blue-600 hover:dark:bg-blue-300 border-violet-500 lg:w-[30%] w-full rounded-lg p-5 text-center hover:bg-blue-100">
             <h1 class="text-2xl font-bold">Messages</h1>
             <p class="font-extrabold text-3xl my-5">{{ 0 }}</p>
             <a href="" class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">View Details</a>
@@ -79,7 +79,7 @@
         </a>
     </div>
     {% if jobs %}
-        <div id="jobContainer" class="transition-all">
+        <div id="jobContainer" class="transition-all dark:text-white">
             {% for job in jobs %}
                 <div class="border border-blue-600 m-5 px-5 pt-5 pb-2 rounded-lg"  data-tooltip-target="tooltip-animation-job-{{job.id}}">
                     <h1 class="lg:text-4xl text-2xl font-bold">{{ job.position }}</h1>
@@ -187,8 +187,8 @@
 
     {% comment %} Application container for show all the application received {% endcomment %}
     {% if applications %}
-        <div id="applicationContainer">
-            <div class="flex font-bold justify-evenly items-center bg-slate-300 mx-10 my-2 rounded-md py-3">
+        <div id="applicationContainer" class="dark:text-white ">
+            <div class="flex dark:text-black font-bold justify-evenly items-center bg-slate-300 mx-10 my-2 rounded-md py-3">
                 <p>Job-Title</p>|
                 <h6>Name</h6>|
                 <h6>Applied At</h6>|
@@ -197,7 +197,7 @@
             </div>
             {% for jobpost in recruiter.jobpost_set.all %}
                 {% for application in jobpost.applicationjobseeker_set.all %}
-                    <div class="flex justify-evenly items-center mx-10 text-center py-2 hover:bg-blue-100 rounded-md">
+                    <div class="flex justify-evenly items-center mx-10 text-center py-2 hover:bg-blue-100 dark:hover:bg-slate-500 rounded-md">
                         <h1 class="w-[20%]" data-tooltip-target="tooltip-job-position-{{ application.id }}">
                             <a class="hover:underline" href="{% url 'details_job' jobpost.id  %}"> 
                                 {{ jobpost.position }} 
@@ -266,7 +266,7 @@
         </div>
         {% comment %} {% for jobpost in recruiter.jobpost_set.all %} {% endcomment %}
             {% for application in applications %}
-                <div class="flex justify-evenly items-center mx-10 text-center py-2 hover:bg-blue-100 rounded-md">
+                <div class="flex dark:text-white justify-evenly items-center mx-10 text-center py-2 hover:bg-blue-100 dark:hover:bg-slate-400 rounded-md">
                     <h1 class="w-[20%]" data-tooltip-target="tooltip-job-position-{{ application.id }}">
                         <a class="hover:underline" href="{% url 'details_job' application.jobpost.id  %}"> 
                             {{ application.jobpost.position }} 
