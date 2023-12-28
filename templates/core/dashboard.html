@@ -84,7 +84,11 @@
                 <div class="border border-blue-600 m-5 px-5 pt-5 pb-2 rounded-lg"  data-tooltip-target="tooltip-animation-job-{{job.id}}">
                     <h1 class="lg:text-4xl text-2xl font-bold">{{ job.position }}</h1>
                     <p class="text-blue-500 italic text-3xl my-3">{{ job.recruiter.company_name }} - ( {{ job.job_type }} )</p>
+                    {% if job.salary %}
                     <p class="text-3xl my-5"><strong class="font-extrabold text-2xl">৳&nbsp;</strong>{{ job.salary }}</p>
+                    {% else %}
+                    <p class="text-3xl my-5">Negotiable</p>
+                    {% endif %}
                     <p class="text-slate-500">{{ job.location|linebreaksbr }}</p>
                     
                     <div>
@@ -106,6 +110,20 @@
                     <p class="w-[90%] ms-5">
                         {{ job.job_requirements|linebreaksbr }}
                     </p>
+
+                    {% if job.skills_required.all %}
+                    <h2 class="text-2xl font-medium my-5">Required skills</h2>
+                    <p class="w-[90%] ms-5">
+                        <ul class="list-disc ms-10">
+
+                            {% for skill in job.skills_required.all  %}
+                            <li>
+                                {{ skill }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </p>
+                    {% endif %}
 
                     <div class="flex justify-between mt-5">
                         
@@ -222,11 +240,75 @@
 
 
 {% endif %}
-
-
-
-
 {% comment %} recruiter block end {% endcomment %}
+<!--================================================-->
+<!--================================================-->
+<!--================================================-->
+
+
+
+
+
+{% comment %} jobseeker block start {% endcomment %}
+<!--================================================-->
+<!--================================================-->
+<!--================================================-->
+{% if jobseeker %}
+    {% comment %} Application container for show all the application received {% endcomment %}
+    {% if applications %}
+    <h1 class="text-center py-3 bg-lime-300 text-4xl font-medium">Your application</h1>
+    <div id="applicationContainerJobseeker">
+        <div class="flex font-bold justify-evenly items-center bg-slate-300 mx-10 my-2 rounded-md py-3">
+            <p>Job-Title</p>|
+            <h6>Company Name</h6>|
+            <h6>Applied At</h6>|
+            <h6>Company Logo</h6>
+        </div>
+        {% comment %} {% for jobpost in recruiter.jobpost_set.all %} {% endcomment %}
+            {% for application in applications %}
+                <div class="flex justify-evenly items-center mx-10 text-center py-2 hover:bg-blue-100 rounded-md">
+                    <h1 class="w-[20%]" data-tooltip-target="tooltip-job-position-{{ application.id }}">
+                        <a class="hover:underline" href="{% url 'details_job' application.jobpost.id  %}"> 
+                            {{ application.jobpost.position }} 
+                        </a>
+                    </h1>
+    
+                    {% comment %} jobpost position tooltip start {% endcomment %}
+                    <div id="tooltip-job-position-{{ application.id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                        view details of this job
+                        <div class="tooltip-arrow" data-popper-arrow></div>
+                    </div>
+                    {% comment %} jobpost position tooltip end {% endcomment %}
+    
+                    <h3 class="w-[20%]" data-tooltip-target="tooltip-user-{{ application.id }}">
+                        <a class="hover:underline" href="{% url 'details_recruiter' application.jobpost.recruiter.id  %}"> 
+                            {{ application.jobpost.recruiter.company_name  }} 
+                        </a>
+                    </h3>
+                    {% comment %} jobpost position tooltip start {% endcomment %}
+                    <div id="tooltip-user-{{ application.id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                        view details of this company
+                        <div class="tooltip-arrow" data-popper-arrow></div>
+                    </div>
+                    {% comment %} jobpost position tooltip end {% endcomment %}
+    
+                    <p class="w-[20%]">{{ application.created_at }}</p>
+                    
+                    <a class="w-[20%] flex justify-center" href="{% if application.jobpost.recruiter.company_logo %} {{ application.jobpost.recruiter.company_logo.url }} {% else %} {% static 'image/job-reqruiter.jpeg' %} {% endif %}">
+                        <img class="w-16 aspect-square rounded-full" src="{% if application.jobpost.recruiter.company_logo %} {{ application.jobpost.recruiter.company_logo.url }} {% else %} {% static 'image/job-reqruiter.jpeg' %} {% endif %}" alt="{{ application.jobpost.recruiter.company_name }} list-group-item-secondary ">
+                    </a>
+                </div>
+                {% if not forloop.last %} <hr class="my-2"> {% endif %}
+            {% endfor %}
+        {% comment %} {% endfor %} {% endcomment %}
+    </div>
+    {% endif %}
+    {% comment %} Application container for show all the application received block end {% endcomment %}
+{% endif %}
+
+
+
+{% comment %} jobseeker block end {% endcomment %}
 <!--================================================-->
 <!--================================================-->
 <!--================================================-->

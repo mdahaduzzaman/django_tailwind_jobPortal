@@ -9,7 +9,7 @@ from .forms import *
 from .utils import *
 
 def home(request):
-    jobs = JobPost.objects.filter(is_active=True)
+    jobs = JobPost.objects.filter(is_active=True).order_by('-created_at')
     return render(request, 'core/home.html', {'jobs': jobs})
 
 
@@ -22,8 +22,8 @@ def add_job_post(request):
                 form.save()
                 messages.success(request, 'Job added successfully')
                 return redirect('home')
-            except:
-                messages.error(request, "You don't have permission to post a job")
+            except Exception as e:
+                messages.error(request, f"You don't have permission to post a job for {e}")
     else:
         form = JobPostForm()
     return render(request, 'core/add_job_post.html', {'form': form})
@@ -78,6 +78,30 @@ def details_job(request, jobId):
     job = JobPost.objects.get(pk=jobId)
     return render(request, 'core/details_job.html', {'job': job})
 
+def apply_job(request, jobpostID):
+    if request.user.is_authenticated:
+        jobpost = JobPost.objects.get(pk=jobpostID)
+        if user_is_jobseeker(request.user):
+            try:
+                application = Applicationjobseeker.objects.get(jobseeker=request.user.jobseeker)
+                messages.success(request, "You've already applied.")
+            except:
+                application = Applicationjobseeker(jobseeker=request.user.jobseeker, jobpost=jobpost)
+                application.save()
+                messages.success(request, 'Successfully applied.')
+            pass
+        else:
+            if user_is_recruiter(request.user):
+                if request.user.recruiter == jobpost.recruiter:
+                    messages.warning(request, "This job is posted by you")
+
+        messages.warning(request, "You should have a jobseeker account.")
+        # Redirect to where the request is generated
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        messages.error(request, "You have to login first to apply")
+        return redirect('user_login')
+
 def recruiters_list(request):
     recruiters = Recruiter.objects.all()
     return render(request, 'core/recruiters_list.html', {'recruiters': recruiters})
@@ -95,12 +119,12 @@ def details_recruiter(request, recruiterID):
     return render(request, 'core/details_recruiter.html', {'recruiters': recruiters, 'recruiter': recruiter, 'jobs': jobs})
 
 def professionals(request):
-    users = CustomUser.objects.filter(jobseeker__isnull=False)
+    users = CustomUser.objects.filter(jobseeker__isnull=False).order_by('-date_joined')
 
     return render(request, 'core/professionals.html', {'users': users})
 
 def professional(requset, userId):
-    users = CustomUser.objects.all()
+    users = CustomUser.objects.filter(jobseeker__isnull=False)
 
     user = get_object_or_404(users, pk=userId)
     users = users.exclude(pk=user.pk)
@@ -156,10 +180,14 @@ def dashboard(request):
         context['applications'] = user.jobseeker.applicationjobseeker_set.all()
         context['jobseeker'] = user.jobseeker
 
+        return render(request, 'core/dashboard.html', context)
+
+
+
     # if user is recruiter then including this recruiter object
     if user_is_recruiter(user):
         count = 0
-        jobs = user.recruiter.jobpost_set.filter(is_active=True)
+        jobs = user.recruiter.jobpost_set.filter(is_active=True).order_by('-created_at')
 
         # Getting total number of application count
         for jobpost in jobs:
@@ -171,8 +199,9 @@ def dashboard(request):
         context['applications'] = True if jobs else False
         context['applicationCount'] = count
 
-    return render(request, 'core/dashboard.html', context)
-
+        return render(request, 'core/dashboard.html', context)
+    
+    return redirect('joinas')
 
 def profile(request):
     user = request.user
@@ -183,7 +212,8 @@ def profile(request):
     if user_is_jobseeker(user):
         context['jobseekerUpdateForm'] = JobSeekerForm(instance=user.jobseeker)
         context['experienceUpdateForm'] = ExperienceForm()
-    
+        context['educationUpdateForm'] = EducationForm()    
+        
     # if the user is recruiter then including this recruiter object
     if user_is_recruiter(user):
         context['recruiterUpdateForm'] = RecruiterForm(instance=user.recruiter)
@@ -227,37 +257,85 @@ def update_jobseeker_profile(request):
     return redirect('profile')
 
 def add_experience(request):
+    if user_is_jobseeker(request.user):
+        if request.method == "POST":
+            experienceUpdateForm = ExperienceForm(request.POST)
+            if experienceUpdateForm.is_valid():
+                experienceUpdateForm.instance.jobseeker = request.user.jobseeker
+                obj = experienceUpdateForm.save()
+                messages.success(request, f"{obj.jobseeker.user.full_name} experience added successfully")
+            else:
+                messages.error(request, f"{dict(experienceUpdateForm.errors.items())}")
+        return redirect('profile')
+    else:
+        messages.error(request, "Without jobseeker account, You will not be able to add experience")
+        return redirect('dashboard')
+
+def update_experience(request, experienceID):
     if request.method == "POST":
-        experienceUpdateForm = ExperienceForm(request.POST)
-        if experienceUpdateForm.is_valid():
-            experienceUpdateForm.instance.jobseeker = request.user.jobseeker
-            obj = experienceUpdateForm.save()
-            messages.success(request, f"{obj.jobseeker.user.full_name} experience added successfully")
+        experienceObject = Experience.objects.get(pk=experienceID)
+        if experienceObject.jobseeker.user == request.user:
+            experienceUpdateForm = ExperienceForm(request.POST, request.FILES, instance=experienceObject)
+            if experienceUpdateForm.is_valid():
+                experienceUpdateForm.instance.jobseeker = request.user.jobseeker
+                obj = experienceUpdateForm.save()
+                messages.success(request, f"{obj.jobseeker.user.full_name} experience updated successfully")
+            else:
+                messages.error(request, f"{dict(experienceUpdateForm.errors.items())}")
         else:
-            messages.error(request, f"{dict(experienceUpdateForm.errors.items())}")
+            messages.error(request, "You aren't authorized to update this experience")
     return redirect('profile')
+
 
 def delete_experience(request, experienceID):
     obj = Experience.objects.get(pk=experienceID)
-    obj.delete()
-    messages.success(request, 'Experience deleted successfully')
+    if obj.jobseeker.user == request.user:
+        obj.delete()
+        messages.success(request, 'Experience deleted successfully')
+    else:
+        messages.error(request, "You aren't authorized to delete this experience")
     return redirect('profile')
 
+def add_education(request):
+    if user_is_jobseeker(request.user):
+        if request.method == "POST":
+            educationUpdateForm = EducationForm(request.POST)
+            if educationUpdateForm.is_valid():
+                educationUpdateForm.instance.jobseeker = request.user.jobseeker
+                obj = educationUpdateForm.save()
+                messages.success(request, f"{obj.jobseeker.user.full_name} education added successfully")
+            else:
+                messages.error(request, f"{dict(educationUpdateForm.errors.items())}")
+        return redirect('profile')
+    else:
+        messages.error(request, "Without jobseeker account, You will not be able to add education")
+        return redirect('dashboard')
 
-
-def update_experience(request):
+def update_education(request, educationID):
     if request.method == "POST":
-        id = request.POST.get('id')
-        experienceObject = Experience.objects.get(pk=id)
-        experienceUpdateForm = ExperienceForm(request.POST, request.FILES, instance=experienceObject)
-        if experienceUpdateForm.is_valid():
-            experienceUpdateForm.instance.jobseeker = request.user.jobseeker
-            obj = experienceUpdateForm.save()
-            messages.success(request, f"{obj.jobseeker.user.full_name} experience added successfully")
+        educationObject = Education.objects.get(pk=educationID)
+
+        if educationObject.jobseeker.user == request.user:
+            educationUpdateForm = EducationForm(request.POST, request.FILES, instance=educationObject)
+            if educationUpdateForm.is_valid():
+                educationUpdateForm.instance.jobseeker = request.user.jobseeker
+                obj = educationUpdateForm.save()
+                messages.success(request, f"{obj.jobseeker.user.full_name} education updated successfully")
+            else:
+                messages.error(request, f"{dict(educationUpdateForm.errors.items())}")
         else:
-            messages.error(request, f"{dict(experienceUpdateForm.errors.items())}")
+            messages.error(request, "You aren't authorized to update this education")
     return redirect('profile')
 
+
+def delete_education(request, educationID):
+    obj = Education.objects.get(pk=educationID)
+    if obj.jobseeker.user == request.user:
+        obj.delete()
+        messages.success(request, 'Education deleted successfully')
+    else:
+        messages.error(request, "You aren't authorized to delete this education")
+    return redirect('profile')
 
 
 def about(request):
@@ -267,7 +345,10 @@ def services(request):
     return render(request, 'core/services.html')
 
 def joinas(request):
-    return render(request, 'core/joinas.html')
+    if request.user.is_authenticated:
+        return render(request, 'core/joinas.html')
+    else:
+        return redirect('user_login')
 
 def register_profile(request, type):
     form = None

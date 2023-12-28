@@ -212,7 +212,7 @@ class JobPost(models.Model):
     about_this_job = models.TextField()
     job_responsibilities = models.TextField()
     job_requirements = models.TextField()
-    salary = models.IntegerField()
+    salary = models.IntegerField(null=True)
     location = models.TextField()
     skills_required = models.ManyToManyField(Skill)
     job_type = models.CharField(max_length=20, choices = jobs, default='Onsite')
