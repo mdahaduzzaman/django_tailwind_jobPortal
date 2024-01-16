@@ -9,7 +9,7 @@
         <div class="border border-blue-600 m-5 px-5 pt-5 pb-2 rounded-lg dark:bg-slate-700 dark:text-slate-200 bg-white"  data-tooltip-target="tooltip-animation-job-{{job.id}}">
             <h1 class="lg:text-6xl text-2xl font-bold">{{ job.position }}</h1>
             <p class="text-blue-500 italic text-3xl my-3">{{ job.recruiter.company_name }} - ( {{ job.job_type }} )</p>
-            <p class="text-3xl my-5"><strong class="font-extrabold text-2xl">৳&nbsp;</strong>{{ job.salary }}</p>
+            <p class="text-3xl my-5"><strong class="font-extrabold text-2xl">৳&nbsp;</strong>{% if job.salary %} {{ job.salary }} {% else %} Negotiable {% endif %}</p>
             <p class="text-slate-500">{{ job.location|linebreaksbr }}</p>
             
             <div>
@@ -24,35 +24,17 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
                 </svg>                  
             </a>
+            <h2 class="text-2xl font-semibold mt-5 mb-4">Total Vacancy</h2>
+            <span class="text-xl bg-lime-300 p-3 rounded-lg font-extrabold">{{ job.number_of_vacancies }}</span>
 
+            <h2 class="text-2xl font-semibold mt-5 mb-1">Skills Required</h2>
+            {% for skill in job.skills_requied.all %}
+            {{ skill }} {% if not forloop.last %}&nbsp;-&nbsp;{% endif %}
+            {% endfor %}
             <h2 class="text-4xl font-semibold my-5">About the job</h2>
             <p class="w-[90%] ms-5">
-                {{ job.about_this_job|linebreaksbr }}
+                {{ job.about_this_job|safe }}
             </p>
-
-            <h2 class="text-2xl font-medium my-5">Job responsibility</h2>
-            <p class="w-[90%] ms-5">
-                {{ job.job_responsibilities|linebreaksbr }}
-            </p>
-
-            <h2 class="text-2xl font-medium my-5">Job Requirements</h2>
-            <p class="w-[90%] ms-5">
-                {{ job.job_requirements|linebreaksbr }}
-            </p>
-
-            {% if job.skills_required.all %}
-                <h2 class="text-2xl font-medium my-5">Required skills</h2>
-                <p class="w-[90%] ms-5">
-                    <ul class="list-disc ms-10">
-
-                        {% for skill in job.skills_required.all  %}
-                        <li>
-                            {{ skill }}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </p>
-            {% endif %}
 
 
             <div class="">

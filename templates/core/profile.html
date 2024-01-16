@@ -103,7 +103,7 @@
                         <!-- Modal header -->
                         <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                             <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                                Edit your profile
+                                Edit your Recruiter Profile
                             </h3>
                             <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="recruiterUpdateForm-modal">
                                 <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -116,11 +116,12 @@
                         <div class="p-4 md:p-5">
                             {% if recruiterUpdateForm %}
                                 <form action="{% url 'update_recruiter_profile' %}" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
-                                    <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Edit your Recruiter Profile</h1>
                                     {% csrf_token %}
                                         {% for field in recruiterUpdateForm %}
                                             <div class="mb-2">
-                                                <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                                                <div>
+                                                    <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>&nbsp;{% if field.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                                </div>
                                                 {{ field}}
                                             </div>
                                             {% if field.errors %}
@@ -129,7 +130,7 @@
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
-                                    <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">SignUp</button>
+                                    <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Update</button>
                                 </form>
                             {% endif %}
                         </div>
@@ -146,11 +147,12 @@
             <p class="my-3">{% if request.user.recruiter.company_address %} {{ request.user.recruiter.company_address|linebreaksbr }} {% else %} Not-updated-yet{% endif %}</p>
             <p class="my-3"><span class="font-semibold">Website: </span>{% if request.user.recruiter.website %} <a class="underline text-blue-500" target="_blank" href="{{ request.user.recruiter.website }}">{{ request.user.recruiter.website }}</a> {% else %} Not-updated-yet{% endif %}</p>
         </div>
-
+        
         <div class="mt-5 mx-8">
             <h1 class="font-semibold text-3xl">About</h1>
             <p class="my-3">{% if request.user.recruiter.company_about %} {{ request.user.recruiter.company_about|linebreaksbr }} {% else %} Not-updated-yet{% endif %}</p>
             <p class="my-3"><span class="font-semibold">Main services: </span>{% if request.user.recruiter.main_services %} {{ request.user.recruiter.main_services|linebreaksbr }} {% else %} Not-updated-yet{% endif %}</p>
+            <p><span class="font-semibold">Total number of employees:</span> {% if  request.user.recruiter.total_employees  %} {{ request.user.recruiter.total_employees }} {% else %} Not-updated-yet{% endif %}</p>
         </div>
     </div>
     {% endif %}
@@ -257,59 +259,7 @@
             <p class="mt-3">{{ experience.details_of_this_job|linebreaksbr }}</p>
             {% if not forloop.last %} <hr class="my-5"> {% endif %}
 
-            {% if forloop.last %} 
-                <div class='mt-3 flex justify-end'>
-                    {% comment %} Add experience modal start {% endcomment %}
-                    <button data-modal-target="experienceUpdateForm-modal" data-modal-toggle="experienceUpdateForm-modal" class="text-white bg-green-400 hover:text-green-400 flex gap-2 hover:bg-green-100 p-2 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="font-extrabold w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        Add
-                    </button> 
-
-                    <!-- profileUpdateForm modal -->
-                    <div id="experienceUpdateForm-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                        <div class="relative p-4 w-full max-w-md max-h-full">
-                            <!-- Modal content -->
-                            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                                <!-- Modal header -->
-                                <div class="flex items-center justify-between p-4 md:px-5 border-b rounded-t dark:border-gray-600">
-                                    <h1 class="mb-4 text-xl font-bold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-xl dark:text-white">Add your Experience</h1>
-                                    <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="experienceUpdateForm-modal">
-                                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                                        </svg>
-                                        <span class="sr-only">Close modal</span>
-                                    </button>
-                                </div>
-                                <!-- Modal body -->
-                                <div class="p-4 md:p-2">
-                                    {% if experienceUpdateForm %}
-                                        <form action="{% url 'add_experience' %}" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
-                                            
-                                            {% csrf_token %}
-                                                {% for field in experienceUpdateForm %}
-                                                    <div class="mb-2">
-                                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
-                                                        {{ field}}
-                                                    </div>
-                                                    {% if field.errors %}
-                                                        {% for error in field.errors %}
-                                                            <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
-                                                        {% endfor %}
-                                                    {% endif %}
-                                                {% endfor %}
-                                            <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Add experience</button>
-                                        </form>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div> 
-                    {% comment %} Add experience modal end {% endcomment %}
-                    <!--=====================================-->
-                </div>
-            {% endif %}
+            
 
             {% comment %} Experience corner action button start {% endcomment %}
             <button data-modal-target="experience-delete-modal-{{experience.id}}" data-modal-toggle="experience-delete-modal-{{experience.id}}" class="absolute top-0 right-10 hover:bg-green-100 p-1 bg-red-500 text-white rounded-md hover:text-red-500">
@@ -372,31 +322,44 @@
                                     {% comment %} <h1 class="mb-4 text-2xl font-extrabold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Edit your Jobseeker Profile</h1> {% endcomment %}
                                     {% csrf_token %}
                                     <div class="mb-2">
-                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_position" class="custom-label">Position</label>
+                                        <div>
+                                            <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_position" class="custom-label">Position</label>&nbsp;{% if experienceUpdateForm.position.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                        </div>
                                         <input type="text" name="position" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter your position" value="{{ experience.position }}" maxlength="150" required id="id_position">
                                     </div>
                                     
                                 
                                     <div class="mb-2">
-                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_company_name" class="custom-label">Company name</label>
+                                        <div>
+                                            <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_company_name" class="custom-label">Company name</label>&nbsp;{% if experienceUpdateForm.company_name.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                        </div>
                                         <input type="text" name="company_name" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" value="{{ experience.company_name }}" placeholder="Enter your company name" maxlength="150" required id="id_company_name">
                                     </div>
                                     
                                 
                                     <div class="mb-2">
-                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_from_time" class="custom-label">From time</label>
+                                        <div>
+                                            <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_from_time" class="custom-label">From time</label>&nbsp;{% if experienceUpdateForm.from_time.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                        </div>
                                         <input type="date" name="from_time" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" value="{{ experience.from_time|date:'Y-m-d' }}" required id="id_from_time">
                                     </div>
                                     
                                 
                                     <div class="mb-2">
-                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_to_time" class="custom-label">To time</label>
+                                        <div>
+                                            <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_to_time" class="custom-label">To time</label>&nbsp;{% if experienceUpdateForm.to_time.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                        </div>
+
                                         <input type="date" name="to_time" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" value="{{ experience.to_time|date:'Y-m-d' }}" required id="id_to_time">
                                     </div>
                                     
                                 
                                     <div class="mb-2">
-                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_job_type" class="custom-label">Job type</label>
+                                        <div>
+                                            <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_job_type" class="custom-label">Job type</label>&nbsp;{% if experienceUpdateForm.job_type.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+
+                                        </div>
+
                                         <select name="job_type" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter position" id="id_job_type">
                                             <option value="Onsite" {% if experience.job_type == "Onsite" %} selected {% endif %}>Onsite</option>
                                             <option value="Hybrid" {% if experience.job_type == "Hybrid" %} selected {% endif %}>Hybrid</option>
@@ -406,7 +369,11 @@
                                     
                                 
                                     <div class="mb-2">
-                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_job_time" class="custom-label">Job time</label>
+                                        <div>
+                                            <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_job_time" class="custom-label">Job time</label>&nbsp;{% if experienceUpdateForm.job_time.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+
+                                        </div>
+
                                         <select name="job_time" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter position" id="id_job_time">
                                             <option value="Full-time" {% if experience.job_time == "Full-time" %} selected {% endif %}>Full-time</option>
                                             <option value="Part-time" {% if experience.job_time == "Part-time" %} selected {% endif %}>Part-time</option>
@@ -416,20 +383,12 @@
                                     
                                 
                                     <div class="mb-2">
-                                        <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_details_of_this_job" class="custom-label">Details of this job</label>
+                                        <div>
+                                            <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_details_of_this_job" class="custom-label">Details of this job</label>&nbsp;{% if experienceUpdateForm.details_of_this_job.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                        </div>
+
                                         <textarea name="details_of_this_job" cols="40" rows="3" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter details of this position" required id="id_details_of_this_job">{{ experience.details_of_this_job }}</textarea>
                                     </div>
-                                        {% comment %} {% for field in experienceUpdateForm %}
-                                            <div class="mb-2">
-                                                <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
-                                                {{ field }}
-                                            </div>
-                                            {% if field.errors %}
-                                                {% for error in field.errors %}
-                                                    <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %} {% endcomment %}
                                     <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Update experience</button>
                                 </form>
                             {% endif %}
@@ -441,13 +400,73 @@
             <!--=====================================-->
         </div>
         {% endfor %}
+
+        {% comment %} ====================================================================== {% endcomment %}
+        {% comment %} THis is the block where add icon visible for adding a new experience {% endcomment %}
+        {% comment %} ====================================================================== {% endcomment %}
+        <div class='mt-3 flex justify-end'>
+            {% comment %} Add experience modal start {% endcomment %}
+            <button data-modal-target="experienceUpdateForm-modal" data-modal-toggle="experienceUpdateForm-modal" class="text-white bg-green-400 hover:text-green-400 flex gap-2 hover:bg-green-100 p-2 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="font-extrabold w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Add Experience
+            </button> 
+
+            <!-- profileUpdateForm modal -->
+            <div id="experienceUpdateForm-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative p-4 w-full max-w-md max-h-full">
+                    <!-- Modal content -->
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-4 md:px-5 border-b rounded-t dark:border-gray-600">
+                            <h1 class="mb-4 text-xl font-bold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-xl dark:text-white">Add your Experience</h1>
+                            <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="experienceUpdateForm-modal">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-2">
+                            {% if experienceUpdateForm %}
+                                <form action="{% url 'add_experience' %}" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
+                                    
+                                    {% csrf_token %}
+                                        {% for field in experienceUpdateForm %}
+                                            <div class="mb-2">
+                                                <div>
+                                                    <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>&nbsp;{% if field.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                                </div>
+                                                {{ field}}
+                                            </div>
+                                            {% if field.errors %}
+                                                {% for error in field.errors %}
+                                                    <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Add experience</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            {% comment %} Add experience modal end {% endcomment %}
+            <!--=====================================-->
+        </div>
+        {% comment %} ====================================================================== {% endcomment %}
+        {% comment %} THis is the block where add icon visible for adding a new experience {% endcomment %}
+        {% comment %} ====================================================================== {% endcomment %}
     </div>
     {% comment %} Experience section end {% endcomment %}
 
 
 
     {% comment %} Education section start {% endcomment %}
-    <div class="mt-10 mx-10 bg-white dark:bg-slate-700 rounded-lg p-5">
+    <div class="my-10 mx-10 bg-white dark:text-slate-200 dark:bg-slate-700 rounded-lg p-5">
         <h1 class="font-semibold text-3xl mb-3">Education</h1>
         {% for education in request.user.jobseeker.education_set.all %}
             <div class="relative">
@@ -457,60 +476,6 @@
                     <p>{{ education.start_date|date:"F Y" }} - {{ education.end_date|date:"F Y" }}</p>
                 </div>
                 {% if not forloop.last %} <hr class="my-5"> {% endif %}
-
-                {% if forloop.last %} 
-                    <div class='mt-3 flex justify-end'>
-                        {% comment %} Add education modal start {% endcomment %}
-                        <button data-modal-target="educationUpdateForm-modal" data-modal-toggle="educationUpdateForm-modal" class="text-white bg-green-400 hover:text-green-400 flex gap-2 hover:bg-green-100 p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="font-extrabold w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                            Add
-                        </button> 
-
-                        <!-- educationUpdateForm modal -->
-                        <div id="educationUpdateForm-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                            <div class="relative p-4 w-full max-w-md max-h-full">
-                                <!-- Modal content -->
-                                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                                    <!-- Modal header -->
-                                    <div class="flex items-center justify-between p-4 md:px-5 border-b rounded-t dark:border-gray-600">
-                                        <h1 class="mb-4 text-xl font-bold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-xl dark:text-white">Add your Education</h1>
-                                        <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="educationUpdateForm-modal">
-                                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                                            </svg>
-                                            <span class="sr-only">Close modal</span>
-                                        </button>
-                                    </div>
-                                    <!-- Modal body -->
-                                    <div class="p-4 md:p-2">
-                                        {% if educationUpdateForm %}
-                                            <form action="{% url 'add_education' %}" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
-                                                
-                                                {% csrf_token %}
-                                                    {% for field in educationUpdateForm %}
-                                                        <div class="mb-2">
-                                                            <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
-                                                            {{ field}}
-                                                        </div>
-                                                        {% if field.errors %}
-                                                            {% for error in field.errors %}
-                                                                <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Add education</button>
-                                            </form>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div> 
-                        {% comment %} Add education modal end {% endcomment %}
-                        <!--=====================================-->
-                    </div>
-                {% endif %}
 
 
                 {% comment %} education corner action button start {% endcomment %}
@@ -574,38 +539,43 @@
                                     <form action="{% url 'update_education' education.id %}" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
                                         {% csrf_token %}
                                         <div class="mb-2">
-                                            <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_school" class="custom-label">School</label>
+                                            <div class="block">
+                                                <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_school" class="custom-label">School</label>&nbsp;{% if educationUpdateForm.school.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                            </div>
                                             <input type="text" name="school" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter your position" value="{{ education.school }}" maxlength="150" required id="id_school">
                                         </div>
 
                                         <div class="mb-2">
-                                            <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_degree" class="custom-label">Degree</label>
+                                            <div class="block">
+                                                <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_degree" class="custom-label">Degree</label>&nbsp;{% if educationUpdateForm.degree.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                            </div>
                                             <input type="text" name="degree" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter your position" value="{{ education.degree }}" maxlength="150" required id="id_degree">
                                         </div>
 
                                         <div class="mb-2">
-                                            <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_field_of_study" class="custom-label">Field of Study</label>
+                                            <div class="block">
+                                                <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_field_of_study" class="custom-label">Field of Study</label>&nbsp;{% if educationUpdateForm.field_of_study.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                            </div>
                                             <input type="text" name="field_of_study" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter your position" value="{{ education.field_of_study }}" maxlength="150" required id="id_field_of_study">
                                         </div>
                                         
                                     
                                     
                                         <div class="mb-2">
-                                            <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_start_date" class="custom-label">Start Date</label>
+                                            <div class="block">
+                                                <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_start_date" class="custom-label">Start Date</label>&nbsp;{% if educationUpdateForm.start_date.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                            </div>
                                             <input type="date" name="start_date" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" value="{{ education.start_date|date:'Y-m-d' }}" required id="id_start_date">
                                         </div>
                                         
                                     
                                         <div class="mb-2">
-                                            <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_end_date" class="custom-label">End Date</label>
+                                            <div class="block">
+                                                <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_end_date" class="custom-label">End Date</label>&nbsp;{% if educationUpdateForm.end_date.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                            </div>
                                             <input type="date" name="end_date" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" value="{{ education.end_date|date:'Y-m-d' }}" required id="id_end_date">
                                         </div>
                                         
-                                    
-                                        <div class="mb-2">
-                                            <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_field_of_study" class="custom-label">Field of Study</label>
-                                            <input type="text" name="field_of_study" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter your position" value="{{ education.field_of_study }}" maxlength="150" required id="id_field_of_study">
-                                        </div>
 
                                         <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Update education</button>
                                     </form>
@@ -618,12 +588,78 @@
                 <!--=====================================-->
             </div>
         {% endfor %}
+        {% comment %} ====================================================================== {% endcomment %}
+        {% comment %} THis is the block where add icon visible for adding a new education {% endcomment %}
+        {% comment %} ====================================================================== {% endcomment %}
+        <div class='mt-3 flex justify-end'>
+            {% comment %} Add education modal start {% endcomment %}
+            <button data-modal-target="educationUpdateForm-modal" data-modal-toggle="educationUpdateForm-modal" class="text-white bg-green-400 hover:text-green-400 flex gap-2 hover:bg-green-100 p-2 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="font-extrabold w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Add Education
+            </button> 
+
+            <!-- educationUpdateForm modal -->
+            <div id="educationUpdateForm-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative p-4 w-full max-w-md max-h-full">
+                    <!-- Modal content -->
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-4 md:px-5 border-b rounded-t dark:border-gray-600">
+                            <h1 class="mb-4 text-xl font-bold tracking-tight leading-none text-gray-900 md:text-2xl lg:text-xl dark:text-white">Add your Education</h1>
+                            <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="educationUpdateForm-modal">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-2">
+                            {% if educationUpdateForm %}
+                                <form action="{% url 'add_education' %}" class="max-w-lg lg:mx-auto mx-5 pt-5 pb-5 lg:pb-0" method="post" novalidate enctype="multipart/form-data">
+                                    
+                                    {% csrf_token %}
+                                        {% for field in educationUpdateForm %}
+                                            <div class="mb-2">
+                                                <div>
+                                                    <label class="mb-1 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>&nbsp;{% if field.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                                                </div>
+                                                {{ field}}
+                                            </div>
+                                            {% if field.errors %}
+                                                {% for error in field.errors %}
+                                                    <p class="block mb-2 text-sm text-red-600 dark:text-red-500">{{ error }}!</p>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    <button type="submit" class=" mt-2 w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Add education</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            {% comment %} Add education modal end {% endcomment %}
+            <!--=====================================-->
+        </div>
+        {% comment %} ====================================================================== {% endcomment %}
+        {% comment %} THis is the block where add icon visible for adding a new education {% endcomment %}
+        {% comment %} ====================================================================== {% endcomment %}
     </div>
     {% endif %}
     {% comment %} Education section end {% endcomment %}
 
-    {% comment %} jobseeker block end {% endcomment %}
-    <!--======================================================-->
+{% comment %} jobseeker block end {% endcomment %}
+<!--======================================================-->
+<!--======================================================-->
+<!--======================================================-->
+<!--======================================================-->
+<!--======================================================-->
+<!--======================================================-->
+<!--======================================================-->
+<!--======================================================-->
 
 
 {% comment %} 

@@ -15,7 +15,7 @@
                     <p class="text-slate-500">{{ job.location }}</p>
     
                     <div class="flex justify-between align-bottom">
-                        <p><strong class="font-extrabold text-sm">৳&nbsp;</strong>{{ job.salary }}</p>
+                        <p><strong class="font-extrabold text-sm">৳&nbsp;</strong>{% if job.salary %} {{ job.salary }} {% else %} Negotiable {% endif %}</p>
                         {% if job.created_at %}
                             <p class="text-purple-500 text-[.7rem] lg:text-sm text-right">Published at {{ job.created_at|calculate_days_hours_since }}</p>
                         {% endif %}
@@ -30,5 +30,9 @@
                 </div>
             </a>
         {% endfor %}
+    {% else %}
+    <div class="h-[80vh] grid place-items-center font-bold text-4xl text-red-500">
+        No Job Post Published Yet
+    </div>
     {% endif %}
 {% endblock content %}

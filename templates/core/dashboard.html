@@ -95,36 +95,19 @@
                         <h3 class="my-3">Deadline: {{ job.deadline }}</h3>
 
                     </div>
+                    <h2 class="text-2xl font-semibold mt-5 mb-4">Total Vacancy</h2>
+                    <span class="text-xl bg-lime-300 p-3 rounded-lg font-extrabold">{{ job.number_of_vacancies }}</span>
+
+                    <h2 class="text-2xl font-semibold mt-5 mb-1">Skills Required</h2>
+                    {% for skill in job.skills_requied.all %}
+                    {{ skill }} {% if not forloop.last %}&nbsp;-&nbsp;{% endif %}
+                    {% endfor %}
 
                     <h2 class="text-4xl font-semibold my-5">About the job</h2>
                     <p class="w-[90%] ms-5">
-                        {{ job.about_this_job|linebreaksbr }}
+                        {{ job.about_this_job|safe }}
                     </p>
-
-                    <h2 class="text-2xl font-medium my-5">Job responsibility</h2>
-                    <p class="w-[90%] ms-5">
-                        {{ job.job_responsibilities|linebreaksbr }}
-                    </p>
-
-                    <h2 class="text-2xl font-medium my-5">Job Requirements</h2>
-                    <p class="w-[90%] ms-5">
-                        {{ job.job_requirements|linebreaksbr }}
-                    </p>
-
-                    {% if job.skills_required.all %}
-                    <h2 class="text-2xl font-medium my-5">Required skills</h2>
-                    <p class="w-[90%] ms-5">
-                        <ul class="list-disc ms-10">
-
-                            {% for skill in job.skills_required.all  %}
-                            <li>
-                                {{ skill }}
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </p>
-                    {% endif %}
-
+                    
                     <div class="flex justify-between mt-5">
                         
 
@@ -262,12 +245,13 @@
             <p>Job-Title</p>|
             <h6>Company Name</h6>|
             <h6>Applied At</h6>|
-            <h6>Company Logo</h6>
+            <h6>Company Logo</h6>|
+            <h6>Status</h6>
         </div>
         {% comment %} {% for jobpost in recruiter.jobpost_set.all %} {% endcomment %}
             {% for application in applications %}
                 <div class="flex dark:text-white justify-evenly items-center mx-10 text-center py-2 hover:bg-blue-100 dark:hover:bg-slate-400 rounded-md">
-                    <h1 class="w-[20%]" data-tooltip-target="tooltip-job-position-{{ application.id }}">
+                    <h1 class="w-[16.66%]" data-tooltip-target="tooltip-job-position-{{ application.id }}">
                         <a class="hover:underline" href="{% url 'details_job' application.jobpost.id  %}"> 
                             {{ application.jobpost.position }} 
                         </a>
@@ -280,7 +264,7 @@
                     </div>
                     {% comment %} jobpost position tooltip end {% endcomment %}
     
-                    <h3 class="w-[20%]" data-tooltip-target="tooltip-user-{{ application.id }}">
+                    <h3 class="w-[16.66%]" data-tooltip-target="tooltip-user-{{ application.id }}">
                         <a class="hover:underline" href="{% url 'details_recruiter' application.jobpost.recruiter.id  %}"> 
                             {{ application.jobpost.recruiter.company_name  }} 
                         </a>
@@ -292,15 +276,20 @@
                     </div>
                     {% comment %} jobpost position tooltip end {% endcomment %}
     
-                    <p class="w-[20%]">{{ application.created_at }}</p>
+                    <p class="w-[16.66%]">{{ application.created_at }}</p>
                     
-                    <a class="w-[20%] flex justify-center" href="{% if application.jobpost.recruiter.company_logo %} {{ application.jobpost.recruiter.company_logo.url }} {% else %} {% static 'image/job-reqruiter.jpeg' %} {% endif %}">
+                    <a class="w-[16.66%] flex justify-center" href="{% if application.jobpost.recruiter.company_logo %} {{ application.jobpost.recruiter.company_logo.url }} {% else %} {% static 'image/job-reqruiter.jpeg' %} {% endif %}">
                         <img class="w-16 aspect-square rounded-full" src="{% if application.jobpost.recruiter.company_logo %} {{ application.jobpost.recruiter.company_logo.url }} {% else %} {% static 'image/job-reqruiter.jpeg' %} {% endif %}" alt="{{ application.jobpost.recruiter.company_name }} list-group-item-secondary ">
                     </a>
+                    <p class="w-[16.66%]">{{ application.status }}</p>
                 </div>
                 {% if not forloop.last %} <hr class="my-2"> {% endif %}
             {% endfor %}
         {% comment %} {% endfor %} {% endcomment %}
+    </div>
+    {% else %}
+    <div class="h-[50vh] dark:text-slate-200 grid place-items-center text-4xl font-bold">
+        You doesn't applied to any job yet 
     </div>
     {% endif %}
     {% comment %} Application container for show all the application received block end {% endcomment %}

@@ -37,4 +37,10 @@ urlpatterns = [
     path('services/', services, name='services'),
     path('join-as/', joinas, name='joinas'),
     path('register-profile/<str:type>', register_profile, name='register_profile'),
+
+
+    path('accept-application/<int:pk>', accept_application, name='accept_application'),
+    path('decline-application/<int:pk>', decline_application, name='decline_application'),
+
+
 ]

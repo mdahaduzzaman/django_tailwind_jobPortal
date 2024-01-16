@@ -1,6 +1,5 @@
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.hashers import check_password
 from django import forms
 
 class SignupForm(UserCreationForm):
@@ -25,54 +24,10 @@ class JobseekerForm(forms.ModelForm):
         error_messages={'required': 'CV is required'}
     )
 
-    skills = forms.ModelMultipleChoiceField(
-        queryset=Skill.objects.all(),
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'your-custom-class'}),
-        label="Select your skills",
-        error_messages={'required': 'Please select at least one skill'}, required=True
-    )
     
     class Meta:
         model = JobSeeker
         exclude = ('user',)
-
-
-class JobPostForm(forms.ModelForm):
-    class Meta:
-        model = JobPost
-        exclude = ('recruiter', 'is_active')
-
-        widgets = {
-            'position': forms.TextInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter position", 'autofocus': 'autofocus'}),
-
-            'about_this_job': forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter about of this position", 'rows': "3"}),
-
-            'job_responsibilities': forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter responsibilities of this position", 'rows': "3"}),
-
-            'job_requirements': forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter requirements of this position", 'rows': "3"}),
-
-            # 'salary': forms.NumberInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter salary or leave blank for negotiable"}),
-
-            'location':forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter location", 'rows': "3"}),
-
-            'skills_required': forms.SelectMultiple(attrs={'class': 'custom-class'}),
-
-            'job_type': forms.Select(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter position"}),
-
-            'deadline': forms.DateTimeInput(attrs={
-                'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'type': 'datetime-local'
-            })
-        }
-
-    salary = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter salary or leave blank for negotiable"}))
-
-    skills_required = forms.ModelMultipleChoiceField(
-        queryset=Skill.objects.all(),
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'w-48 text-sm px-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white'}),
-        label="Select required skills",
-        error_messages={'required': 'Please select at least one skill'}, required=True
-    )
-
 
 class UserProfileEditForm(forms.ModelForm):
 
@@ -90,6 +45,8 @@ class RecruiterForm(forms.ModelForm):
     class Meta:
         model = Recruiter
         exclude = ('user',)
+        
+
         widgets = {
             'company_name': forms.TextInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter company name"}),
 
@@ -101,12 +58,13 @@ class RecruiterForm(forms.ModelForm):
 
             'company_cover_photo': forms.FileInput(attrs={'class': 'shadow-sm block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400'}),
 
-            'total_employees': forms.NumberInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter total number of employees"}),
+            # 'total_employees': forms.NumberInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter total number of employees"}),
 
             'website': forms.URLInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter website url"}),
 
             'main_services': forms.TextInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter main service"}),
         }
+    total_employees = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter total number of employees"}))
     
 
 
@@ -166,57 +124,110 @@ class EducationForm(forms.ModelForm):
 
             'field_of_study': forms.TextInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter your company name"}), 
         }
+class JobPostForm(forms.ModelForm):
+    new_skills = forms.CharField(
+        required=False,
+        help_text="Enter new skills, separated by commas.",
+        widget=forms.TextInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter new skills, separated by commas."})
+    )
+    class Meta:
+        model = JobPost
+        fields = ['position', 'number_of_vacancies', 'salary', 'job_type', 'deadline', 'skills_requied', 'new_skills', 'about_this_job']
+        # exclude = ('recruiter', 'is_active')
+
+        widgets = {
+            'position': forms.TextInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter position", 'autofocus': 'autofocus'}),
+
+            # 'about_this_job': forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter about of this position", 'rows': "3"}),
+
+            # 'job_responsibilities': forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter responsibilities of this position", 'rows': "3"}),
+
+            # 'job_requirements': forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter requirements of this position", 'rows': "3"}),
+
+            'salary': forms.NumberInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter salary or leave blank for negotiable"}),
+
+            'number_of_vacancies': forms.NumberInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter number of vacancy"}),
+
+            'location':forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter location", 'rows': "3"}),
+
+            'skills_requied': forms.SelectMultiple(attrs={'class': 'w-full rounded-lg border-0 outline-0'}),
+
+            'job_type': forms.Select(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter position"}),
+
+            'deadline': forms.DateTimeInput(attrs={
+                'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'type': 'datetime-local'
+            })
+        }
+
+    salary = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter salary or leave blank for negotiable"}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Process existing skills
+        skills_existing = cleaned_data.get('skills_requied')
+        
+        # Process new skills
+        new_skills_str = cleaned_data.get('new_skills')
+        new_skills_list = [skill.strip() for skill in new_skills_str.split(',') if skill.strip()]
+
+        # Check if skills_existing is not None before trying to use it
+        if skills_existing is None:
+            skills_existing = []  # or skills_existing = []
+
+        # Convert QuerySet to list
+        skills_existing_list = list(skills_existing)
+
+        # Create new skills and add them to the cleaned_data
+        new_skills_objects = []
+        
+        for new_skill in new_skills_list:
+            skill, created = Skills.objects.get_or_create(name=new_skill)
+            new_skills_objects.append(skill)
+
+        # Combine existing skills and new skills
+        combined_skills = skills_existing_list + new_skills_objects
+        cleaned_data['skills_requied'] = combined_skills
+
+        return cleaned_data
 
 
+class TestForm(forms.ModelForm):
+    new_skills = forms.CharField(
+        required=False,
+        help_text="Enter new skills, separated by commas."
+    )
 
-# class CombinedForm(forms.ModelForm):
-#     class Meta:
-#         model = JobSeeker
-#         fields = ['cv', 'cover_photo', 'about', 'headline', 'skills', 'location']
-#         widgets = {
-#             'cv': forms.FileInput(attrs={'class': 'shadow-sm block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400'}),
+    class Meta:
+        model = JobPost
+        fields = '__all__'
 
-#             'cover_photo': forms.FileInput(attrs={'class': 'shadow-sm block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400'}),
+    def clean(self):
+        cleaned_data = super().clean()
 
-#             'headline': forms.TextInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter your headline"}),
+        # Process existing skills
+        skills_existing = cleaned_data.get('skills_requied')
+        
+        # Process new skills
+        new_skills_str = cleaned_data.get('new_skills')
+        new_skills_list = [skill.strip() for skill in new_skills_str.split(',') if skill.strip()]
 
-#             'about': forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter about yourself", 'rows': "3"}),
+        # Check if skills_existing is not None before trying to use it
+        if skills_existing is None:
+            skills_existing = []  # or skills_existing = []
 
-#             'location': forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter your location", 'rows': "3"}),
+        # Convert QuerySet to list
+        skills_existing_list = list(skills_existing)
 
-            
+        # Create new skills and add them to the cleaned_data
+        new_skills_objects = []
+        
+        for new_skill in new_skills_list:
+            skill, created = Skills.objects.get_or_create(name=new_skill)
+            new_skills_objects.append(skill)
 
-#             'skills': forms.CheckboxSelectMultiple(attrs={'class': 'w-48 text-sm px-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white'}),
+        # Combine existing skills and new skills
+        combined_skills = skills_existing_list + new_skills_objects
+        cleaned_data['skills_requied'] = combined_skills
 
-#         }
-
-#     position = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter your position"}))
-
-#     company_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter your company name"}))
-
-#     from_time = forms.DateField(widget=forms.DateInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'type': 'date'}))
-    
-#     to_time = forms.DateField(widget=forms.DateInput(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'type': 'date'}))
-
-#     job_type = forms.ChoiceField(choices=Experience.jobs, initial="Onsite", widget=forms.Select(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter position"}))
-
-#     job_time = forms.ChoiceField(choices=Experience.time, initial="Full-time", widget=forms.Select(attrs={'class': 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light', 'placeholder': "Enter position"}))
-
-#     details_of_this_job = forms.CharField(widget=forms.Textarea(attrs={'class': 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'placeholder': "Enter details of this position", 'rows': "3"}),)
-
-#     def save(self, commit=True):
-#         job_seeker_instance = super().save(commit=False)
-#         experience_instance = Experience(
-#             position=self.cleaned_data['position'],
-#             company_name=self.cleaned_data['company_name'],
-#             from_time=self.cleaned_data['from_time'],
-#             to_time=self.cleaned_data['to_time'],
-#             job_type=self.cleaned_data['job_type'],
-#             job_time=self.cleaned_data['job_time'],
-#             details_of_this_job=self.cleaned_data['details_of_this_job']
-#         )
-#         if commit:
-#             job_seeker_instance.save()
-#             experience_instance.jobseeker = job_seeker_instance
-#             experience_instance.save()
-#         return job_seeker_instance
+        return cleaned_data

@@ -16,13 +16,9 @@ class RecruiterAdmin(admin.ModelAdmin):
 @admin.register(JobSeeker)
 class JobSeekerAdmin(admin.ModelAdmin):
     list_display = ('id', 'user')
-    search_fields = ('user', 'skills')
-    list_filter = ('user', 'skills')
+    search_fields = ('user', )
+    list_filter = ('user',)
 
-@admin.register(Skill)
-class SkillAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    search_fields = ('name',)
 
 @admin.register(Applicationjobseeker)
 class ApplicationjobseekerAdmin(admin.ModelAdmin):

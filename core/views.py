@@ -15,6 +15,7 @@ def home(request):
 
 def add_job_post(request):
     if request.method == "POST":
+        # form = JobPostForm(request.POST)
         form = JobPostForm(request.POST)
         if form.is_valid():
             try:
@@ -23,7 +24,7 @@ def add_job_post(request):
                 messages.success(request, 'Job added successfully')
                 return redirect('home')
             except Exception as e:
-                messages.error(request, f"You don't have permission to post a job for {e}")
+                messages.error(request, f"Post not added for {e}")
     else:
         form = JobPostForm()
     return render(request, 'core/add_job_post.html', {'form': form})
@@ -35,7 +36,6 @@ def edit_job_post(request, jobPostID):
         form = JobPostForm(request.POST, instance=jobPostInstance)
         if form.is_valid():
             try:
-                form.instance.recruiter = request.user.recruiter
                 form.save()
                 messages.success(request, 'Job edited successfully')
                 return redirect('home')
@@ -62,16 +62,9 @@ def search(request):
         users = CustomUser.objects.filter(jobseeker__isnull=False, jobseeker__skills__name__icontains=content)
         return render(request, 'core/professionals.html', {'users': users})
     except:
-        jobs = JobPost.objects.filter(skills_required__name__icontains=content)
-        return render(request, 'core/home.html', {'jobs': jobs})
-    
-        # try:
-        #     jobseeker = request.user.jobseeker
+        jobs = JobPost.objects.filter(position__icontains=content) | JobPost.objects.filter(about_this_job__icontains=content)
 
-        #     jobs = JobPost.objects.filter(skills_required__name__icontains=content)
-        #     return render(request, 'core/home.html', {'jobs': jobs})
-        # except:
-        #     return redirect('home')
+        return render(request, 'core/home.html', {'jobs': jobs})
 
 
 def details_job(request, jobId):
@@ -95,7 +88,6 @@ def apply_job(request, jobpostID):
                 if request.user.recruiter == jobpost.recruiter:
                     messages.warning(request, "This job is posted by you")
 
-        messages.warning(request, "You should have a jobseeker account.")
         # Redirect to where the request is generated
         return redirect(request.META.get('HTTP_REFERER'))
     else:
@@ -155,9 +147,9 @@ def user_login(request):
                 email = form.cleaned_data['email']
                 password = form.cleaned_data['password']
                 user = authenticate(email=email, password=password)
-                if user:
-                    messages.success(request, "Logged in successfully.")
+                if user is not None:
                     login(request, user)
+                    messages.success(request, "Logged in successfully.")
                     return redirect('dashboard')
                 else:
                     messages.error(request, "Invalid credential")
@@ -179,7 +171,6 @@ def dashboard(request):
     if user_is_jobseeker(user):
         context['applications'] = user.jobseeker.applicationjobseeker_set.all()
         context['jobseeker'] = user.jobseeker
-
         return render(request, 'core/dashboard.html', context)
 
 
@@ -191,7 +182,7 @@ def dashboard(request):
 
         # Getting total number of application count
         for jobpost in jobs:
-            for application in jobpost.applicationjobseeker_set.all():
+            for _ in jobpost.applicationjobseeker_set.all():
                 count += 1
 
         context['jobs'] = jobs
@@ -221,7 +212,6 @@ def profile(request):
     return render(request, 'core/profile.html', context)
 
 def update_profile(request):
-    print("post_request received")
     if request.method == "POST":
         profileUpdateForm = UserProfileEditForm(request.POST, request.FILES, instance=request.user)
 
@@ -360,6 +350,8 @@ def register_profile(request, type):
                 form.instance.user = request.user
                 messages.success(request, 'Recruiter account created successfully.')
                 form.save()
+                recruiter = Group.objects.get(name='Recruiter')
+                request.user.groups.add(recruiter)
                 return redirect('dashboard')
         else:
             form = RecruiterForm()
@@ -371,6 +363,8 @@ def register_profile(request, type):
                 form.instance.user = request.user
                 messages.success(request, 'Jobseeker account created successfully.')
                 form.save()
+                jobseeker = Group.objects.get(name='Jobseeker')
+                request.user.groups.add(jobseeker)
                 return redirect('dashboard')
         else:
             form = JobseekerForm()
@@ -378,3 +372,22 @@ def register_profile(request, type):
     else:
         return redirect('home')
     return render(request, 'core/register_profile.html', {'form': form, 'register_type': register_type})
+
+
+# ACCEPT BUTTON FOR RECRUITER
+def accept_application(request, pk):
+    application = Applicationjobseeker.objects.get(pk=pk)
+    application.status = "Accepted"
+    messages.success(request, 'Accepted successfully')
+    application.save()
+
+    return redirect(request.META.get('HTTP_REFERER'))
+
+# ACCEPT BUTTON FOR RECRUITER
+def decline_application(request, pk):
+    application = Applicationjobseeker.objects.get(pk=pk)
+    application.status = "Declined"
+    messages.success(request, 'Declined successfully')
+    application.save()
+
+    return redirect(request.META.get('HTTP_REFERER'))

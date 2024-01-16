@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import make_password
+from ckeditor.fields import RichTextField
 
 # A utility function for uploading User avatar
 def user_avatar_upload_path(instance, filename):
@@ -26,7 +27,7 @@ def cover_photo_upload_path(instance, filename):
 
 # Creating a CustomUserManager for manage the CustomUser
 class CustomUserManager(BaseUserManager):
-    def _create_user(self, email, password, **extra_fields):
+    def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
@@ -35,19 +36,10 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def create_user(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', False)
-        extra_fields.setdefault('is_superuser', False)
-        return self._create_user(email, password, **extra_fields)
-    
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-        return self._create_user(email, password, **extra_fields)
+        return self.create_user(email, password, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -66,10 +58,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    def save(self, *args, **kwargs):
-        if self._state.adding:  # Check if the instance is being added (created) for the first time
-            self.password = make_password(self.password)  # Hash the password using Django's make_password
-        return super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self._state.adding:  # Check if the instance is being added (created) for the first time
+    #         self.password = make_password(self.password)  # Hash the password using Django's make_password
+    #     return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.email
@@ -87,7 +79,7 @@ class Recruiter(models.Model):
     company_about = models.TextField(verbose_name=_('About Company'))
     company_logo = models.ImageField(upload_to=company_image_upload_path, verbose_name=_('Company Logo'))
     company_cover_photo = models.ImageField(upload_to=company_cover_image_upload_path, verbose_name=_('Company Cover Photo'), null=True)
-    total_employees = models.IntegerField(default=0)
+    total_employees = models.IntegerField(default=0, null=True)
     website = models.URLField(null=True)
     main_services = models.CharField(max_length=150, null=True)
 
@@ -103,19 +95,6 @@ class Recruiter(models.Model):
         verbose_name_plural = _('Recruiters')
 
 
-class Skill(models.Model):
-    name = models.CharField(max_length=150, verbose_name=_('Skill Name'))
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self) -> str:
-        return self.name
-    
-    class Meta:
-        db_table = "Skill"
-        verbose_name = _('Skill')
-        verbose_name_plural = _('Skills')
 
 class JobSeeker(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
@@ -124,7 +103,6 @@ class JobSeeker(models.Model):
     cover_photo = models.ImageField(upload_to=cover_photo_upload_path, blank=True, null=True)
     about = models.TextField(null=True)
     headline = models.CharField(max_length=100, null=True)
-    skills = models.ManyToManyField(Skill)
     location = models.TextField(null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -186,8 +164,14 @@ class Education(models.Model):
     
 
 class Applicationjobseeker(models.Model):
+    application_type_list = (
+        ("Accepted", "Accepted"),
+        ("Declined", "Declined"),
+        ("Pending", "Pending"),
+    )
     jobseeker = models.ForeignKey(JobSeeker, on_delete=models.CASCADE)
     jobpost = models.ForeignKey('JobPost', on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=application_type_list, default="Pending")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -200,6 +184,16 @@ class Applicationjobseeker(models.Model):
         verbose_name = _('Applicationjobseeker')
         verbose_name_plural = _('Applicationjobseekers')
 
+
+class Skills(models.Model):
+    name = models.CharField(max_length=150)
+
+
+    def __str__(self) -> str:
+        return self.name
+    
+
+
 class JobPost(models.Model):
     jobs = (
         ('Onsite', 'Onsite'),
@@ -209,12 +203,11 @@ class JobPost(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     recruiter = models.ForeignKey(Recruiter, on_delete=models.CASCADE)
     position = models.CharField(max_length=150)
-    about_this_job = models.TextField()
-    job_responsibilities = models.TextField()
-    job_requirements = models.TextField()
-    salary = models.IntegerField(null=True)
+    number_of_vacancies = models.IntegerField(null=True, blank=True, default=1)
+    about_this_job = RichTextField()
     location = models.TextField()
-    skills_required = models.ManyToManyField(Skill)
+    salary = models.DecimalField(max_digits=8, decimal_places=2, null=True)
+    skills_requied = models.ManyToManyField(Skills)
     job_type = models.CharField(max_length=20, choices = jobs, default='Onsite')
     deadline = models.DateTimeField(null=True)
     is_active = models.BooleanField(default=True)
@@ -223,7 +216,7 @@ class JobPost(models.Model):
 
     def __str__(self) -> str:
         return self.position
-    
+
     class Meta:
         db_table = "JobPost"
         verbose_name = _('JobPost')

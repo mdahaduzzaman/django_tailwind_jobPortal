@@ -10,7 +10,10 @@
             {% csrf_token %}
             {% for field in form %}
                 <div class="form-group">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>
+                    <div>
+                        <label class="mb-2 text-sm font-medium text-gray-900 dark:text-white" for="id_{{ field.name }}" class="custom-label">{{ field.label }}</label>&nbsp;{% if field.field.required %}<small class="font-bold text-red-500">*</small>{% endif %}
+                    </div>
+                    
                     {% if field.field.widget.input_type == 'file' %}
                         <input class="shadow-sm mb-2 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file" name="{{ field.name }}" id="id_{{ field.name }}">
                     {% elif field.field.widget.input_type == 'checkbox' %}                    
